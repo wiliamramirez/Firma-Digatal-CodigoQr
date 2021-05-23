@@ -1,8 +1,14 @@
+using System;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
+using System.Security.Cryptography;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using QRCoder;
 
 
 namespace API.Controllers
@@ -23,12 +29,22 @@ namespace API.Controllers
         {
             string container = "Test";
             string filePath = Path.GetFileName("/Test/imd.pdf");
-            string imagePath = Path.GetFileName("/Test/codigo.png");
             string sourceFilePath = Path.Combine(_environment.WebRootPath, container, filePath);
-            string watermarkImagePath = Path.Combine(_environment.WebRootPath, container, imagePath);
-            string destinationFilePath = "./wwwroot/Test/Watermarked_Output.pdf";
+            string hashDocument = CalculateMd5(sourceFilePath);
 
-            var result = PdfStampWithNewFile(watermarkImagePath, sourceFilePath, destinationFilePath);
+            var data = new Data
+            {
+                Id = Guid.NewGuid(),
+                Affair = "Memorando",
+                Hash = hashDocument,
+                Url = "http:123",
+                User = "Ramirez Gutierrez, Wiliam Eduar"
+            };
+            var codeQr = GenerateQr(data);
+
+            string imageCodeQrPath = SaveImageCodeQr(codeQr, ".png");
+
+            var result = PdfStampWithNewFile(imageCodeQrPath, sourceFilePath);
 
             if (result)
             {
@@ -38,7 +54,53 @@ namespace API.Controllers
             return NotFound();
         }
 
-        private bool PdfStampWithNewFile(string watermarkLocation, string fileLocation, string destinationFilePath)
+        private string CalculateMd5(string filename)
+        {
+            using (var md5 = MD5.Create())
+            {
+                using (var stream = System.IO.File.OpenRead(filename))
+                {
+                    var hash = md5.ComputeHash(stream);
+                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                }
+            }
+        }
+
+        private byte[] GenerateQr(Data data)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                QRCodeGenerator oQrCodeGenerator = new QRCodeGenerator();
+                QRCodeData oQrCodeData =
+                    oQrCodeGenerator.CreateQrCode(JsonConvert.SerializeObject(data), QRCodeGenerator.ECCLevel.Q);
+                QRCode oQrCode = new QRCode(oQrCodeData);
+
+                using (Bitmap oBitmap = oQrCode.GetGraphic(3))
+                {
+                    oBitmap.Save(ms, ImageFormat.Png);
+                    return ms.ToArray();
+                }
+            }
+        }
+
+        private string SaveImageCodeQr(byte[] content, string extension)
+        {
+            string container = "CodeQr";
+            var nameFile = $"{Guid.NewGuid()}{extension}";
+            string folder = Path.Combine(_environment.WebRootPath, container);
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+
+            string ruta = Path.Combine(folder, nameFile);
+            System.IO.File.WriteAllBytes(ruta, content);
+
+            return ruta;
+        }
+
+
+        private bool PdfStampWithNewFile(string watermarkLocation, string fileLocation)
         {
             Document document = new Document();
             PdfReader pdfReader = new PdfReader(fileLocation);
@@ -46,8 +108,9 @@ namespace API.Controllers
                 new FileStream(fileLocation.Replace(".pdf", "[temp][file].pdf"), FileMode.Create));
 
             iTextSharp.text.Image img = iTextSharp.text.Image.GetInstance(watermarkLocation);
-            img.SetAbsolutePosition(125,
-                300); // set the position in the document where you want the watermark to appear (0,0 = bottom left corner of the page)
+
+            // set the position in the document where you want the watermark to appear (0,0 = bottom left corner of the page)
+            img.SetAbsolutePosition(380, 10);
 
 
             PdfContentByte waterMark;
