@@ -14,5 +14,9 @@
     <_ContentIncludedByDefault Remove="wwwroot\CodeQr\2a8ee943-c50a-44e6-9728-c098d880715e.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\Test" />
+  </ItemGroup>
+
 
 </Project>

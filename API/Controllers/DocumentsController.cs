@@ -25,7 +25,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post()
+        public ActionResult<Data> Post()
         {
             string container = "Test";
             string filePath = Path.GetFileName("/Test/imd.pdf");
@@ -40,15 +40,18 @@ namespace API.Controllers
                 Url = "http:123",
                 User = "Ramirez Gutierrez, Wiliam Eduar"
             };
-            var codeQr = GenerateQr(data);
 
+            var codeQr = GenerateQr(data);
             string imageCodeQrPath = SaveImageCodeQr(codeQr, ".png");
 
             var result = PdfStampWithNewFile(imageCodeQrPath, sourceFilePath);
 
+            string hashSecret = CalculateMd5(sourceFilePath);
+            data.HashSecret = hashSecret;
+
             if (result)
             {
-                return NoContent();
+                return Ok(data);
             }
 
             return NotFound();
