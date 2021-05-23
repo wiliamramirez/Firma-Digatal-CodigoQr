@@ -29,7 +29,7 @@ namespace API.Controllers
         public ActionResult<Data> Post([FromForm] AddDocumentDto documentDto)
         {
             string container = "Test";
-            string filePath = Path.GetFileName("/Test/imd.pdf");
+            string filePath = Path.GetFileName("/Test/informe.pdf");
             string sourceFilePath = Path.Combine(_environment.WebRootPath, container, filePath);
             string hashDocument = CalculateMd5(sourceFilePath);
 
@@ -80,7 +80,7 @@ namespace API.Controllers
                     oQrCodeGenerator.CreateQrCode(JsonConvert.SerializeObject(data), QRCodeGenerator.ECCLevel.Q);
                 QRCode oQrCode = new QRCode(oQrCodeData);
 
-                using (Bitmap oBitmap = oQrCode.GetGraphic(3))
+                using (Bitmap oBitmap = oQrCode.GetGraphic(2))
                 {
                     oBitmap.Save(ms, ImageFormat.Png);
                     return ms.ToArray();
@@ -119,11 +119,9 @@ namespace API.Controllers
 
 
             PdfContentByte waterMark;
-            for (int page = 1; page <= pdfReader.NumberOfPages; page++)
-            {
-                waterMark = stamp.GetOverContent(page);
-                waterMark.AddImage(img);
-            }
+
+            waterMark = stamp.GetOverContent(pdfReader.NumberOfPages);
+            waterMark.AddImage(img);
 
             stamp.FormFlattening = true;
             stamp.Close();
