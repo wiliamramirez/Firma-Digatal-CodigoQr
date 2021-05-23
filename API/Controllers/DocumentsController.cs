@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Security.Cryptography;
+using API.DTOs;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Hosting;
@@ -25,7 +26,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Data> Post()
+        public ActionResult<Data> Post([FromForm] AddDocumentDto documentDto)
         {
             string container = "Test";
             string filePath = Path.GetFileName("/Test/imd.pdf");
@@ -35,9 +36,10 @@ namespace API.Controllers
             var data = new Data
             {
                 Id = Guid.NewGuid(),
-                Affair = "Memorando",
+                Affair = documentDto.Affair,
                 Hash = hashDocument,
-                Url = "http:123",
+                Url = $"http:enlaceURl/{hashDocument}",
+                Title = documentDto.Title,
                 User = "Ramirez Gutierrez, Wiliam Eduar"
             };
 
@@ -113,7 +115,7 @@ namespace API.Controllers
             iTextSharp.text.Image img = iTextSharp.text.Image.GetInstance(watermarkLocation);
 
             // set the position in the document where you want the watermark to appear (0,0 = bottom left corner of the page)
-            img.SetAbsolutePosition(380, 10);
+            img.SetAbsolutePosition(360, 10);
 
 
             PdfContentByte waterMark;
