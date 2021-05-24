@@ -44,18 +44,25 @@ namespace API.Controllers
             }
 
             string hashDocument = CalculateMd5(sourceDocumentPath);
+            string urlFile = _storeFiles.GetUrl(containerFile, Path.GetFileName(sourceDocumentPath));
 
             var data = new Data
             {
                 Id = Guid.NewGuid(),
                 Affair = documentDto.Affair,
                 Hash = hashDocument,
-                Url = $"http:enlaceURl/{hashDocument}",
+                Url = urlFile,
                 Title = documentDto.Title,
                 User = "Ramirez Gutierrez, Wiliam Eduar"
             };
-
-            var contentCodeQr = GenerateQr(data);
+            var resultDocumentDto = new DocumentDto
+            {
+                Affair = documentDto.Affair,
+                Title = documentDto.Title,
+                Url = urlFile,
+                User = "Pepito"
+            };
+            var contentCodeQr = GenerateQr(resultDocumentDto);
             string sourceImageCodeQrPath = _storeFiles.SaveFile(contentCodeQr, ".png", containerCodeQr);
 
             var result = PdfStampWithNewFile(sourceImageCodeQrPath, sourceDocumentPath);
@@ -63,10 +70,11 @@ namespace API.Controllers
 
             data.HashSecret = hashSecret;
 
+
             if (result)
             {
-                _storeFiles.DeleteFile(sourceDocumentPath, containerFile);
-                _storeFiles.DeleteFile(sourceImageCodeQrPath, containerCodeQr);
+                /*_storeFiles.DeleteFile(sourceDocumentPath, containerFile);
+                _storeFiles.DeleteFile(sourceImageCodeQrPath, containerCodeQr);*/
                 return Ok(data);
             }
 
@@ -85,13 +93,14 @@ namespace API.Controllers
             }
         }
 
-        private byte[] GenerateQr(Data data)
+        private byte[] GenerateQr(DocumentDto data)
         {
             using (MemoryStream ms = new MemoryStream())
             {
                 QRCodeGenerator oQrCodeGenerator = new QRCodeGenerator();
                 QRCodeData oQrCodeData =
-                    oQrCodeGenerator.CreateQrCode(JsonConvert.SerializeObject(data), QRCodeGenerator.ECCLevel.Q);
+                    oQrCodeGenerator.CreateQrCode(ConvertString(data),
+                        QRCodeGenerator.ECCLevel.Q);
                 QRCode oQrCode = new QRCode(oQrCodeData);
 
                 using (Bitmap oBitmap = oQrCode.GetGraphic(2))
@@ -102,6 +111,11 @@ namespace API.Controllers
             }
         }
 
+        private string ConvertString(DocumentDto obj)
+        {
+            var json = JsonConvert.SerializeObject(obj, Formatting.Indented);
+            return json;
+        }
 
         private bool PdfStampWithNewFile(string watermarkLocation, string fileLocation)
         {
