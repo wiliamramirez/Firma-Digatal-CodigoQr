@@ -1,4 +1,5 @@
 using API.Data;
+using API.Interfaces;
 using API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,7 +28,7 @@ namespace API
                 options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
             });
             services.AddControllers();
-            services.AddTransient<IStoreFiles, StoreFiles>();
+            services.AddScoped<IStoreFilesServices, StoreFilesServices>();
             services.AddHttpContextAccessor();
         }
 

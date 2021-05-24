@@ -1,8 +1,7 @@
-using System.Threading.Tasks;
 
-namespace API.Services
+namespace API.Interfaces
 {
-    public interface IStoreFiles
+    public interface IStoreFilesServices
     {
         string SaveFile(byte[] content, string extension, string container, string contentType = " ");
         string SaveFileAzure(byte[] content, string extension, string container, string contentType);

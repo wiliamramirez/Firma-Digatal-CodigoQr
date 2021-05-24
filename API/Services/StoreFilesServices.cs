@@ -1,18 +1,19 @@
 using System;
 using System.IO;
+using API.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
 namespace API.Services
 {
-    public class StoreFiles : IStoreFiles
+    public class StoreFilesServices : IStoreFilesServices
     {
         private readonly IWebHostEnvironment _environment;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly string _configuration;
 
-        public StoreFiles(IWebHostEnvironment environment, IConfiguration configuration,
+        public StoreFilesServices(IWebHostEnvironment environment, IConfiguration configuration,
             IHttpContextAccessor httpContextAccessor)
         {
             _environment = environment;
@@ -46,7 +47,7 @@ namespace API.Services
             if (ruta != null)
             {
                 var nameFile = Path.GetFileName(ruta);
-                string directory = Path.Combine(_environment.WebRootPath, container, nameFile);
+                var directory = Path.Combine(_environment.WebRootPath, container, nameFile);
 
                 if (File.Exists(directory))
                 {

@@ -1,16 +1,16 @@
 using System;
-using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Security.Cryptography;
 using API.Data;
 using API.DTOs;
 using API.Entities;
-using API.Services;
+using API.Interfaces;
 using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using QRCoder;
+using Image = iTextSharp.text.Image;
 
 
 namespace API.Controllers
@@ -19,12 +19,12 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class DocumentsController : ControllerBase
     {
-        private readonly IStoreFiles _storeFiles;
+        private readonly IStoreFilesServices _storeFiles;
         private readonly DataContext _context;
-        private readonly string containerFile = "File";
-        private readonly string containerCodeQr = "CodeQr";
+        private readonly string _containerFile = "File";
+        private readonly string _containerCodeQr = "CodeQr";
 
-        public DocumentsController(IStoreFiles storeFiles, DataContext context)
+        public DocumentsController(IStoreFilesServices storeFiles, DataContext context)
         {
             _storeFiles = storeFiles;
             _context = context;
@@ -37,18 +37,16 @@ namespace API.Controllers
 
             if (documentDto.File != null)
             {
-                using (var memoryStream = new MemoryStream())
-                {
-                    documentDto.File.CopyTo(memoryStream);
-                    var content = memoryStream.ToArray();
-                    var extension = Path.GetExtension(documentDto.File.FileName);
-                    sourceDocumentPath =
-                        _storeFiles.SaveFile(content, extension, containerFile, documentDto.File.ContentType);
-                }
+                using var memoryStream = new MemoryStream();
+                documentDto.File.CopyTo(memoryStream);
+                var content = memoryStream.ToArray();
+                var extension = Path.GetExtension(documentDto.File.FileName);
+                sourceDocumentPath =
+                    _storeFiles.SaveFile(content, extension, _containerFile, documentDto.File.ContentType);
             }
 
-            string hashDocument = CalculateMd5(sourceDocumentPath);
-            string urlFile = _storeFiles.GetUrl(containerFile, Path.GetFileName(sourceDocumentPath));
+            var hashDocument = CalculateMd5(sourceDocumentPath);
+            var urlFile = _storeFiles.GetUrl(_containerFile, Path.GetFileName(sourceDocumentPath));
 
             var resultDocumentDto = new DocumentDto
             {
@@ -58,15 +56,17 @@ namespace API.Controllers
                 User = "Pepito"
             };
 
-            var contentCodeQr = GenerateQr(resultDocumentDto);
-            string sourceImageCodeQrPath = _storeFiles.SaveFile(contentCodeQr, ".png", containerCodeQr);
+            var contentQrCode = GenerateQr(resultDocumentDto);
+            var sourceImageCodeQrPath = _storeFiles.SaveFile(contentQrCode, ".png", _containerCodeQr);
 
-            var result = PdfStampWithNewFile(sourceImageCodeQrPath, sourceDocumentPath);
-            string hashSecret = CalculateMd5(sourceDocumentPath);
+            AddCodeQrToDocument(sourceImageCodeQrPath, sourceDocumentPath);
+
+            var hashSecret = CalculateMd5(sourceDocumentPath);
 
             var document = new Document
             {
-                Id = hashDocument,
+                /*Id = hashDocument,*/
+                Id = Guid.NewGuid().ToString(),
                 Affair = documentDto.Affair,
                 Url = urlFile,
                 Title = documentDto.Title,
@@ -85,37 +85,29 @@ namespace API.Controllers
                 return Ok(document);
             }
 
-            return NotFound();
+            return BadRequest();
         }
 
         private string CalculateMd5(string filename)
         {
-            using (var md5 = MD5.Create())
-            {
-                using (var stream = System.IO.File.OpenRead(filename))
-                {
-                    var hash = md5.ComputeHash(stream);
-                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-                }
-            }
+            using var md5 = MD5.Create();
+            using var stream = System.IO.File.OpenRead(filename);
+            var hash = md5.ComputeHash(stream);
+            return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
         }
 
         private byte[] GenerateQr(DocumentDto document)
         {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                QRCodeGenerator oQrCodeGenerator = new QRCodeGenerator();
-                QRCodeData oQrCodeData =
-                    oQrCodeGenerator.CreateQrCode(ConvertString(document),
-                        QRCodeGenerator.ECCLevel.Q);
-                QRCode oQrCode = new QRCode(oQrCodeData);
+            using var ms = new MemoryStream();
+            var oQrCodeGenerator = new QRCodeGenerator();
+            var oQrCodeData =
+                oQrCodeGenerator.CreateQrCode(ConvertString(document),
+                    QRCodeGenerator.ECCLevel.Q);
+            var oQrCode = new QRCode(oQrCodeData);
 
-                using (Bitmap oBitmap = oQrCode.GetGraphic(2))
-                {
-                    oBitmap.Save(ms, ImageFormat.Png);
-                    return ms.ToArray();
-                }
-            }
+            using var oBitmap = oQrCode.GetGraphic(2);
+            oBitmap.Save(ms, ImageFormat.Png);
+            return ms.ToArray();
         }
 
         private string ConvertString(DocumentDto obj)
@@ -124,21 +116,19 @@ namespace API.Controllers
             return json;
         }
 
-        private bool PdfStampWithNewFile(string watermarkLocation, string fileLocation)
+        private void AddCodeQrToDocument(string imageCodeQrPath, string fileLocation)
         {
-            PdfReader pdfReader = new PdfReader(fileLocation);
-            PdfStamper stamp = new PdfStamper(pdfReader,
+            var pdfReader = new PdfReader(fileLocation);
+            var stamp = new PdfStamper(pdfReader,
                 new FileStream(fileLocation.Replace(".pdf", "[temp][file].pdf"), FileMode.Create));
 
-            iTextSharp.text.Image img = iTextSharp.text.Image.GetInstance(watermarkLocation);
+            var img = Image.GetInstance(imageCodeQrPath);
 
             // set the position in the document where you want the watermark to appear (0,0 = bottom left corner of the page)
             img.SetAbsolutePosition(360, 10);
 
 
-            PdfContentByte waterMark;
-
-            waterMark = stamp.GetOverContent(pdfReader.NumberOfPages);
+            var waterMark = stamp.GetOverContent(pdfReader.NumberOfPages);
             waterMark.AddImage(img);
 
             stamp.FormFlattening = true;
@@ -147,8 +137,6 @@ namespace API.Controllers
             // now delete the original file and rename the temp file to the original file
             System.IO.File.Delete(fileLocation);
             System.IO.File.Move(fileLocation.Replace(".pdf", "[temp][file].pdf"), fileLocation);
-
-            return true;
         }
     }
 }
