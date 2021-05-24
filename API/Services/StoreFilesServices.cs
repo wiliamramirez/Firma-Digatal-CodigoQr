@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using API.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -21,28 +22,28 @@ namespace API.Services
             _configuration = configuration.GetConnectionString("AzureStorage");
         }
 
-        public string SaveFile(byte[] content, string extension, string container, string contentType = " ")
+        public async Task<string> SaveFile(byte[] content, string extension, string container, string contentType = " ")
         {
             var nameFile = $"{Guid.NewGuid()}{extension}";
-            string folder = Path.Combine(_environment.WebRootPath, container);
+            var folder = Path.Combine(_environment.WebRootPath, container);
 
             if (!Directory.Exists(folder))
             {
                 Directory.CreateDirectory(folder);
             }
 
-            string ruta = Path.Combine(folder, nameFile);
-            File.WriteAllBytes(ruta, content);
+            var ruta = Path.Combine(folder, nameFile);
+            await File.WriteAllBytesAsync(ruta, content);
             return ruta;
         }
 
-        public string SaveFileAzure(byte[] content, string extension, string container, string contentType)
+        public Task<string> SaveFileAzure(byte[] content, string extension, string container, string contentType)
         {
             throw new NotImplementedException();
         }
 
 
-        public void DeleteFile(string ruta, string container)
+        public Task DeleteFile(string ruta, string container)
         {
             if (ruta != null)
             {
@@ -54,6 +55,8 @@ namespace API.Services
                     File.Delete(directory);
                 }
             }
+
+            return Task.FromResult(0);
         }
 
         public string GetUrl(string container, string nameFile)

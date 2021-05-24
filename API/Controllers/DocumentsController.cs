@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using API.Data;
 using API.DTOs;
 using API.Entities;
@@ -29,18 +30,18 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Document> Post([FromForm] AddDocumentDto addDocumentDto)
+        public async Task<ActionResult<Document>> Post([FromForm] AddDocumentDto addDocumentDto)
         {
             if (addDocumentDto.File == null)
             {
                 return BadRequest();
             }
 
-            using var memoryStream = new MemoryStream();
+            await using var memoryStream = new MemoryStream();
             addDocumentDto.File.CopyTo(memoryStream);
             var content = memoryStream.ToArray();
             var extension = Path.GetExtension(addDocumentDto.File.FileName);
-            var documentPath =
+            var documentPath = await
                 _storeFiles.SaveFile(content, extension, _documentContainer, addDocumentDto.File.ContentType);
 
             var hashDocument = CalculateMd5(documentPath);
@@ -55,12 +56,12 @@ namespace API.Controllers
                 Hash = hashDocument
             };
 
-            var contentQrCode = _qrCode.GenerateQrCode(ConvertString(documentDto));
+            var contentQrCode = await _qrCode.GenerateQrCode(ConvertString(documentDto));
 
-            var codeQrImagePath = _storeFiles.SaveFile(contentQrCode, ".png", _codeQrContainer);
+            var qrCodeImagePath = await _storeFiles.SaveFile(contentQrCode, ".png", _codeQrContainer);
 
-            _qrCode.AddQrCodeFile(
-                codeQrImagePath,
+            await _qrCode.AddQrCodeFile(
+                qrCodeImagePath,
                 _codeQrContainer,
                 documentPath,
                 _documentContainer);
@@ -85,7 +86,7 @@ namespace API.Controllers
             if (resultContext > 0)
             {
                 /*_storeFiles.DeleteFile(documentPath, containerFile);
-                _storeFiles.DeleteFile(codeQrImagePath, containerCodeQr);*/
+                _storeFiles.DeleteFile(qrCodeImagePath, containerCodeQr);*/
                 return Ok(document);
             }
 

@@ -1,5 +1,6 @@
 using System.Drawing.Imaging;
 using System.IO;
+using System.Threading.Tasks;
 using API.Interfaces;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
@@ -17,9 +18,9 @@ namespace API.Services
             _environment = environment;
         }
 
-        public byte[] GenerateQrCode(string text)
+        public async Task<byte[]> GenerateQrCode(string text)
         {
-            using var ms = new MemoryStream();
+            await using var ms = new MemoryStream();
             var oQrCodeGenerator = new QRCodeGenerator();
             var oQrCodeData = oQrCodeGenerator.CreateQrCode(text, QRCodeGenerator.ECCLevel.Q);
             var oQrCode = new QRCode(oQrCodeData);
@@ -29,7 +30,7 @@ namespace API.Services
             return ms.ToArray();
         }
 
-        public void AddQrCodeFile(string qrCodeImagePath, string qrCodeContainer, string filePath, string fileContainer)
+        public Task AddQrCodeFile(string qrCodeImagePath, string qrCodeContainer, string filePath, string fileContainer)
         {
             var fileDirectory = "";
             var qrCodeImageDirectory = "";
@@ -63,6 +64,8 @@ namespace API.Services
                 File.Delete(fileDirectory);
                 File.Move(fileDirectory.Replace(".pdf", "[temp][file].pdf"), fileDirectory);
             }
+
+            return Task.FromResult(0);
         }
     }
 }
