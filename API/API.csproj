@@ -1,33 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="iTextSharp.LGPLv2.Core" Version="1.7.1" />
     <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="11.2.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="QRCoderNetCore" Version="1.0.0" />
   </ItemGroup>
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="wwwroot\CodeQr\2a8ee943-c50a-44e6-9728-c098d880715e.png" />
-    <_ContentIncludedByDefault Remove="wwwroot\Test\imd.pdf" />
-    <_ContentIncludedByDefault Remove="wwwroot\Test\informe.pdf" />
-    <_ContentIncludedByDefault Remove="wwwroot\File\a65b21ab-d29d-49eb-8be5-14ffcdaaf92c.pdf" />
-    <_ContentIncludedByDefault Remove="wwwroot\File\ca45ef32-6779-4326-87d5-d5b61b9099cf.pdf" />
-    <_ContentIncludedByDefault Remove="wwwroot\File\dec4d26e-228e-4b6a-b40a-b9a6ab100154.pdf" />
-    <_ContentIncludedByDefault Remove="wwwroot\File\4355b3d4-4358-4212-8065-bbbf343cf856.pdf" />
-    <_ContentIncludedByDefault Remove="wwwroot\File\680913c2-ea63-4470-a86b-5aae5bf5e392.pdf" />
-    <_ContentIncludedByDefault Remove="wwwroot\File\7ef24720-f277-4924-9066-d468ed1537bf.pdf" />
-    <_ContentIncludedByDefault Remove="wwwroot\File\cb6e9f75-2542-4920-b66f-88c1f807f1d8.pdf" />
-    <_ContentIncludedByDefault Remove="wwwroot\File\fa7a0707-37b9-4390-bbc6-511d9a0c1906.pdf" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot" />
-  </ItemGroup>
-
 
 </Project>

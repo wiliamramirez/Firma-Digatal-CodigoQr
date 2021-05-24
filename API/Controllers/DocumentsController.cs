@@ -3,7 +3,9 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Security.Cryptography;
+using API.Data;
 using API.DTOs;
+using API.Entities;
 using API.Services;
 using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Mvc;
@@ -18,16 +20,18 @@ namespace API.Controllers
     public class DocumentsController : ControllerBase
     {
         private readonly IStoreFiles _storeFiles;
+        private readonly DataContext _context;
         private readonly string containerFile = "File";
         private readonly string containerCodeQr = "CodeQr";
 
-        public DocumentsController(IStoreFiles storeFiles)
+        public DocumentsController(IStoreFiles storeFiles, DataContext context)
         {
             _storeFiles = storeFiles;
+            _context = context;
         }
 
         [HttpPost]
-        public ActionResult<Data> Post([FromForm] AddDocumentDto documentDto)
+        public ActionResult<Document> Post([FromForm] AddDocumentDto documentDto)
         {
             var sourceDocumentPath = "";
 
@@ -46,15 +50,6 @@ namespace API.Controllers
             string hashDocument = CalculateMd5(sourceDocumentPath);
             string urlFile = _storeFiles.GetUrl(containerFile, Path.GetFileName(sourceDocumentPath));
 
-            var data = new Data
-            {
-                Id = Guid.NewGuid(),
-                Affair = documentDto.Affair,
-                Hash = hashDocument,
-                Url = urlFile,
-                Title = documentDto.Title,
-                User = "Ramirez Gutierrez, Wiliam Eduar"
-            };
             var resultDocumentDto = new DocumentDto
             {
                 Affair = documentDto.Affair,
@@ -62,20 +57,32 @@ namespace API.Controllers
                 Url = urlFile,
                 User = "Pepito"
             };
+
             var contentCodeQr = GenerateQr(resultDocumentDto);
             string sourceImageCodeQrPath = _storeFiles.SaveFile(contentCodeQr, ".png", containerCodeQr);
 
             var result = PdfStampWithNewFile(sourceImageCodeQrPath, sourceDocumentPath);
             string hashSecret = CalculateMd5(sourceDocumentPath);
 
-            data.HashSecret = hashSecret;
+            var document = new Document
+            {
+                Id = hashDocument,
+                Affair = documentDto.Affair,
+                Url = urlFile,
+                Title = documentDto.Title,
+                User = "Ramirez Gutierrez, Wiliam Eduar",
+                HashSecret = hashSecret
+            };
+
+            _context.Documents.Add(document);
+            var resultContext = _context.SaveChanges();
 
 
-            if (result)
+            if (resultContext > 0)
             {
                 /*_storeFiles.DeleteFile(sourceDocumentPath, containerFile);
                 _storeFiles.DeleteFile(sourceImageCodeQrPath, containerCodeQr);*/
-                return Ok(data);
+                return Ok(document);
             }
 
             return NotFound();
@@ -93,13 +100,13 @@ namespace API.Controllers
             }
         }
 
-        private byte[] GenerateQr(DocumentDto data)
+        private byte[] GenerateQr(DocumentDto document)
         {
             using (MemoryStream ms = new MemoryStream())
             {
                 QRCodeGenerator oQrCodeGenerator = new QRCodeGenerator();
                 QRCodeData oQrCodeData =
-                    oQrCodeGenerator.CreateQrCode(ConvertString(data),
+                    oQrCodeGenerator.CreateQrCode(ConvertString(document),
                         QRCodeGenerator.ECCLevel.Q);
                 QRCode oQrCode = new QRCode(oQrCodeData);
 
