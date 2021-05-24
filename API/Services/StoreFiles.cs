@@ -13,7 +13,7 @@ namespace API.Services
             _environment = environment;
         }
 
-        public string SaveFile(byte[] content, string extension, string container, string contentType)
+        public string SaveFile(byte[] content, string extension, string container, string contentType = " ")
         {
             var nameFile = $"{Guid.NewGuid()}{extension}";
             string folder = Path.Combine(_environment.WebRootPath, container);

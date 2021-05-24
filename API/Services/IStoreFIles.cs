@@ -4,6 +4,6 @@ namespace API.Services
 {
     public interface IStoreFiles
     {
-        string SaveFile(byte[] content, string extension, string container, string contentType);
+        string SaveFile(byte[] content, string extension, string container, string contentType = " ");
     }
 }

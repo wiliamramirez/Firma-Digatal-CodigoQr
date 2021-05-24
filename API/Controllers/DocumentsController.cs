@@ -5,9 +5,7 @@ using System.IO;
 using System.Security.Cryptography;
 using API.DTOs;
 using API.Services;
-using iTextSharp.text;
 using iTextSharp.text.pdf;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using QRCoder;
@@ -19,13 +17,12 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class DocumentsController : ControllerBase
     {
-        private readonly IWebHostEnvironment _environment;
         private readonly IStoreFiles _storeFiles;
         private readonly string containerFile = "File";
+        private readonly string containerCodeQr = "CodeQr";
 
-        public DocumentsController(IWebHostEnvironment environment, IStoreFiles storeFiles)
+        public DocumentsController(IStoreFiles storeFiles)
         {
-            _environment = environment;
             _storeFiles = storeFiles;
         }
 
@@ -58,8 +55,8 @@ namespace API.Controllers
                 User = "Ramirez Gutierrez, Wiliam Eduar"
             };
 
-            var codeQr = GenerateQr(data);
-            string imageCodeQrPath = SaveImageCodeQr(codeQr, ".png");
+            var contentCodeQr = GenerateQr(data);
+            string imageCodeQrPath = _storeFiles.SaveFile(contentCodeQr, ".png", containerCodeQr);
 
             var result = PdfStampWithNewFile(imageCodeQrPath, documentPath);
 
@@ -103,7 +100,7 @@ namespace API.Controllers
             }
         }
 
-        private string SaveImageCodeQr(byte[] content, string extension)
+        /*private string SaveImageCodeQr(byte[] content, string extension)
         {
             string container = "CodeQr";
             var nameFile = $"{Guid.NewGuid()}{extension}";
@@ -117,12 +114,11 @@ namespace API.Controllers
             System.IO.File.WriteAllBytes(ruta, content);
 
             return ruta;
-        }
+        }*/
 
 
         private bool PdfStampWithNewFile(string watermarkLocation, string fileLocation)
         {
-            Document document = new Document();
             PdfReader pdfReader = new PdfReader(fileLocation);
             PdfStamper stamp = new PdfStamper(pdfReader,
                 new FileStream(fileLocation.Replace(".pdf", "[temp][file].pdf"), FileMode.Create));
