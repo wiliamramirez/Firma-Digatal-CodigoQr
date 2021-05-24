@@ -16,4 +16,18 @@
     <PackageReference Include="QRCoderNetCore" Version="1.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\CodeQr\050415a2-f7a0-4773-9aa6-2dd00db6882f.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\CodeQr\088ffeab-37d9-464b-bfd2-fc2f139d6906.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\CodeQr\2566a4e6-4347-45d1-b8b5-fa52730aa0c6.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\CodeQr\499b011f-c3a1-44ed-a133-b88b1f7a801e.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\CodeQr\4fe43c63-457d-4afa-8dd4-53ccd8456b4d.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\CodeQr\b18132ac-2050-4c7f-995e-bae3e596f663.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\CodeQr\cc552f78-20af-447a-8542-5c3f45bb8534.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot" />
+  </ItemGroup>
+
 </Project>

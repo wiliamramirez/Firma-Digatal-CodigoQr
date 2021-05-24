@@ -29,6 +29,7 @@ namespace API
             });
             services.AddControllers();
             services.AddScoped<IStoreFilesServices, StoreFilesServices>();
+            services.AddScoped<IQrCodeServices, QrCodeServices>();
             services.AddHttpContextAccessor();
         }
 

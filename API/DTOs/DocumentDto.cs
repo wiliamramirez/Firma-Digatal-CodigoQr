@@ -6,5 +6,6 @@ namespace API.DTOs
         public string User { get; set; }
         public string Affair { get; set; }
         public string Title { get; set; }
+        public string Hash { get; set; }
     }
 }
