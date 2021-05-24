@@ -12,6 +12,12 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="wwwroot\CodeQr\2a8ee943-c50a-44e6-9728-c098d880715e.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\Test\imd.pdf" />
+    <_ContentIncludedByDefault Remove="wwwroot\Test\informe.pdf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot" />
   </ItemGroup>
 
 

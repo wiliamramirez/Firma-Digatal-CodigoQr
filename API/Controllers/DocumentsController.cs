@@ -4,6 +4,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Security.Cryptography;
 using API.DTOs;
+using API.Services;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Hosting;
@@ -19,19 +20,33 @@ namespace API.Controllers
     public class DocumentsController : ControllerBase
     {
         private readonly IWebHostEnvironment _environment;
+        private readonly IStoreFiles _storeFiles;
+        private readonly string containerFile = "File";
 
-        public DocumentsController(IWebHostEnvironment environment)
+        public DocumentsController(IWebHostEnvironment environment, IStoreFiles storeFiles)
         {
             _environment = environment;
+            _storeFiles = storeFiles;
         }
 
         [HttpPost]
         public ActionResult<Data> Post([FromForm] AddDocumentDto documentDto)
         {
-            string container = "Test";
-            string filePath = Path.GetFileName("/Test/informe.pdf");
-            string sourceFilePath = Path.Combine(_environment.WebRootPath, container, filePath);
-            string hashDocument = CalculateMd5(sourceFilePath);
+            var documentPath = "";
+
+            if (documentDto.File != null)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    documentDto.File.CopyTo(memoryStream);
+                    var content = memoryStream.ToArray();
+                    var extension = Path.GetExtension(documentDto.File.FileName);
+                    documentPath =
+                        _storeFiles.SaveFile(content, extension, containerFile, documentDto.File.ContentType);
+                }
+            }
+
+            string hashDocument = CalculateMd5(documentPath);
 
             var data = new Data
             {
@@ -46,9 +61,9 @@ namespace API.Controllers
             var codeQr = GenerateQr(data);
             string imageCodeQrPath = SaveImageCodeQr(codeQr, ".png");
 
-            var result = PdfStampWithNewFile(imageCodeQrPath, sourceFilePath);
+            var result = PdfStampWithNewFile(imageCodeQrPath, documentPath);
 
-            string hashSecret = CalculateMd5(sourceFilePath);
+            string hashSecret = CalculateMd5(documentPath);
             data.HashSecret = hashSecret;
 
             if (result)
