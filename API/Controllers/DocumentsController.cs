@@ -29,7 +29,7 @@ namespace API.Controllers
         [HttpPost]
         public ActionResult<Data> Post([FromForm] AddDocumentDto documentDto)
         {
-            var documentPath = "";
+            var sourceDocumentPath = "";
 
             if (documentDto.File != null)
             {
@@ -38,12 +38,12 @@ namespace API.Controllers
                     documentDto.File.CopyTo(memoryStream);
                     var content = memoryStream.ToArray();
                     var extension = Path.GetExtension(documentDto.File.FileName);
-                    documentPath =
+                    sourceDocumentPath =
                         _storeFiles.SaveFile(content, extension, containerFile, documentDto.File.ContentType);
                 }
             }
 
-            string hashDocument = CalculateMd5(documentPath);
+            string hashDocument = CalculateMd5(sourceDocumentPath);
 
             var data = new Data
             {
@@ -56,15 +56,17 @@ namespace API.Controllers
             };
 
             var contentCodeQr = GenerateQr(data);
-            string imageCodeQrPath = _storeFiles.SaveFile(contentCodeQr, ".png", containerCodeQr);
+            string sourceImageCodeQrPath = _storeFiles.SaveFile(contentCodeQr, ".png", containerCodeQr);
 
-            var result = PdfStampWithNewFile(imageCodeQrPath, documentPath);
+            var result = PdfStampWithNewFile(sourceImageCodeQrPath, sourceDocumentPath);
+            string hashSecret = CalculateMd5(sourceDocumentPath);
 
-            string hashSecret = CalculateMd5(documentPath);
             data.HashSecret = hashSecret;
 
             if (result)
             {
+                _storeFiles.DeleteFile(sourceDocumentPath, containerFile);
+                _storeFiles.DeleteFile(sourceImageCodeQrPath, containerCodeQr);
                 return Ok(data);
             }
 
@@ -99,22 +101,6 @@ namespace API.Controllers
                 }
             }
         }
-
-        /*private string SaveImageCodeQr(byte[] content, string extension)
-        {
-            string container = "CodeQr";
-            var nameFile = $"{Guid.NewGuid()}{extension}";
-            string folder = Path.Combine(_environment.WebRootPath, container);
-            if (!Directory.Exists(folder))
-            {
-                Directory.CreateDirectory(folder);
-            }
-
-            string ruta = Path.Combine(folder, nameFile);
-            System.IO.File.WriteAllBytes(ruta, content);
-
-            return ruta;
-        }*/
 
 
         private bool PdfStampWithNewFile(string watermarkLocation, string fileLocation)

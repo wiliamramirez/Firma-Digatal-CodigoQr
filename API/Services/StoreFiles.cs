@@ -27,5 +27,19 @@ namespace API.Services
             File.WriteAllBytes(ruta, content);
             return ruta;
         }
+
+        public void DeleteFile(string ruta, string container)
+        {
+            if (ruta != null)
+            {
+                var nameFile = Path.GetFileName(ruta);
+                string directory = Path.Combine(_environment.WebRootPath, container, nameFile);
+
+                if (File.Exists(directory))
+                {
+                    File.Delete(directory);
+                }
+            }
+        }
     }
 }
