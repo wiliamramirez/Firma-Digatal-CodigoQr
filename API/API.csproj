@@ -7,14 +7,17 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="iTextSharp.LGPLv2.Core" Version="1.7.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.5" />
     <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="11.2.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.5" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.11.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="QRCoderNetCore" Version="1.0.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.11.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +30,13 @@
     <_ContentIncludedByDefault Remove="wwwroot\CodeQr\cc552f78-20af-447a-8542-5c3f45bb8534.png" />
     <_ContentIncludedByDefault Remove="wwwroot\Documents\4ba973ea-8cdf-4afd-b07f-5ee4362bf449.pdf" />
     <_ContentIncludedByDefault Remove="wwwroot\Documents\78d609d3-a8c1-427f-ada3-a301112c15f8.pdf" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\2a5aa469-4616-4cd9-bbb2-897efdbf655b.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\3cea8704-0743-463e-919e-52f2952be0d5.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\59591c0a-be28-4801-8448-e2a6f292683c.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\5a089daf-4a2c-4e64-9be4-ea3b63d981c8.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\68cd9dd1-5e27-4a82-8886-b5863bd2f31e.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\7b6cb45f-1a1b-4ecb-a2af-5ca61ab457be.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\e9064828-61b5-42a3-8cd0-675953d10c1f.png" />
   </ItemGroup>
 
   <ItemGroup>

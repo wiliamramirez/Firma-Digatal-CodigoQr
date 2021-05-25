@@ -5,21 +5,26 @@ using System.Threading.Tasks;
 using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
+    [AllowAnonymous]
     public class AccountsController : BaseApiController
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
+        private readonly ITokenService _tokenService;
 
-        public AccountsController(DataContext context, IMapper mapper)
+        public AccountsController(DataContext context, IMapper mapper, ITokenService tokenService)
         {
             _context = context;
             _mapper = mapper;
+            _tokenService = tokenService;
         }
 
         [HttpPost("register")]
@@ -48,9 +53,9 @@ namespace API.Controllers
                 {
                     Email = user.Email,
                     Fullname = user.FullName,
-                    Name = user.Name,
+                    LastName = user.LastName,
                     Position = user.Position,
-                    Token = "token",
+                    Token = _tokenService.CreateToken(user),
                     Username = user.UserName,
                     Dni = user.Dni
                 };
@@ -81,9 +86,9 @@ namespace API.Controllers
             {
                 Email = user.Email,
                 Fullname = user.FullName,
-                Name = user.Name,
+                LastName = user.LastName,
                 Position = user.Position,
-                Token = "token",
+                Token = _tokenService.CreateToken(user),
                 Username = user.UserName,
                 Dni = user.Dni
             };

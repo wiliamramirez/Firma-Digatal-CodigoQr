@@ -13,6 +13,8 @@ namespace API.Extensions
         public static IServiceCollection AddApplicationServices(this IServiceCollection services,
             IConfiguration config)
         {
+            
+            services.AddHttpContextAccessor();
             services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
             services.AddDbContext<DataContext>(options =>
             {
@@ -20,7 +22,6 @@ namespace API.Extensions
             });
             services.AddScoped<IStoreFilesServices, StoreFilesServices>();
             services.AddScoped<IQrCodeServices, QrCodeServices>();
-            services.AddHttpContextAccessor();
 
             return services;
         }

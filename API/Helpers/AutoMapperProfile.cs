@@ -9,6 +9,7 @@ namespace API.Helpers
         public AutoMapperProfile()
         {
             CreateMap<AppUser, RegisterDto>().ReverseMap();
+            CreateMap<AppUser, UserDto>().ReverseMap();
         }
     }
 }
