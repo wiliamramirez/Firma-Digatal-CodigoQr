@@ -8,6 +8,7 @@ namespace API.Entities
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
         public string Email { get; set; }
+        public string Dni { get; set; }
         public string UserName { get; set; }
         public string Name { get; set; }
         public string FullName { get; set; }

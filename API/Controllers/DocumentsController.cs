@@ -12,9 +12,7 @@ using Newtonsoft.Json;
 
 namespace API.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class DocumentsController : ControllerBase
+    public class DocumentsController : BaseApiController
     {
         private readonly IStoreFilesServices _storeFiles;
         private readonly DataContext _context;
@@ -80,7 +78,7 @@ namespace API.Controllers
             };
 
             _context.Documents.Add(document);
-            var resultContext = _context.SaveChanges();
+            var resultContext = await _context.SaveChangesAsync();
 
 
             if (resultContext > 0)

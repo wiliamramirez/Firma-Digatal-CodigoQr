@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="iTextSharp.LGPLv2.Core" Version="1.7.1" />
     <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="11.2.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.5">
@@ -24,6 +25,8 @@
     <_ContentIncludedByDefault Remove="wwwroot\CodeQr\4fe43c63-457d-4afa-8dd4-53ccd8456b4d.png" />
     <_ContentIncludedByDefault Remove="wwwroot\CodeQr\b18132ac-2050-4c7f-995e-bae3e596f663.png" />
     <_ContentIncludedByDefault Remove="wwwroot\CodeQr\cc552f78-20af-447a-8542-5c3f45bb8534.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\Documents\4ba973ea-8cdf-4afd-b07f-5ee4362bf449.pdf" />
+    <_ContentIncludedByDefault Remove="wwwroot\Documents\78d609d3-a8c1-427f-ada3-a301112c15f8.pdf" />
   </ItemGroup>
 
   <ItemGroup>
