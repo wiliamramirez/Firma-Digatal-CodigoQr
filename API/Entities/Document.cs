@@ -12,5 +12,9 @@ namespace API.Entities
         public string User { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        
+        /*Relacion con la tabla users*/
+        public Guid AppUserId { get; set; }
+        public AppUser AppUser { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace API.Entities
 {
@@ -13,6 +14,9 @@ namespace API.Entities
         public string Name { get; set; }
         public string FullName { get; set; }
         public string Position { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow; 
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        /*Relacion con la tabla documents*/
+        public ICollection<Document> Documents { get; set; }
     }
 }
