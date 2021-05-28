@@ -62,6 +62,8 @@ namespace API.Services
 
                 // now delete the original file and rename the temp file to the original file
                 File.Delete(fileDirectory);
+
+                
                 File.Move(fileDirectory.Replace(".pdf", "[temp][file].pdf"), fileDirectory);
             }
 

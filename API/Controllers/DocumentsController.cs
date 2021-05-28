@@ -63,7 +63,7 @@ namespace API.Controllers
                 Hash = hashDocument
             };
 
-            var contentQrCode = await _qrCode.GenerateQrCode(ConvertString(documentDto));
+            var contentQrCode = await _qrCode.GenerateQrCode(urlFile);
 
             var qrCodeImagePath = await _storeFiles.SaveFile(contentQrCode, ".png", _codeQrContainer);
 

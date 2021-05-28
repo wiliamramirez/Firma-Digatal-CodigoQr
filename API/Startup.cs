@@ -41,13 +41,13 @@ namespace API
 
             // app.UseHttpsRedirection();
 
+            app.UseAuthorization();
+
             app.UseStaticFiles();
 
             app.UseRouting();
 
             app.UseAuthentication();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
