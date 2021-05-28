@@ -8,7 +8,6 @@ using API.Entities;
 using API.Extensions;
 using API.Interfaces;
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -23,6 +22,7 @@ namespace API.Controllers
         private readonly IMapper _mapper;
         private readonly string _documentContainer = "Documents";
         private readonly string _codeQrContainer = "QrCodeImages";
+        private readonly string _secretKey = "-SH";
 
         public DocumentsController(IStoreFilesServices storeFiles, DataContext context, IQrCodeServices qrCode,
             IMapper mapper)
@@ -38,12 +38,12 @@ namespace API.Controllers
         {
             var user = await _context.Users.FindAsync(User.GetId());
 
-
             if (addDocumentDto.File == null)
             {
                 return BadRequest();
             }
 
+            /* Leer documento y alamcenar*/
             await using var memoryStream = new MemoryStream();
             addDocumentDto.File.CopyTo(memoryStream);
             var content = memoryStream.ToArray();
@@ -51,37 +51,46 @@ namespace API.Controllers
             var documentPath = await
                 _storeFiles.SaveFile(content, extension, _documentContainer, addDocumentDto.File.ContentType);
 
-            var hashDocument = CalculateMd5(documentPath);
+            /*  */
             var urlFile = _storeFiles.GetUrl(_documentContainer, Path.GetFileName(documentPath));
 
-            var documentDto = new DocumentDto
+            /*url de la ruta del archivo*/
+            var finalDocumentPath = urlFile.Replace(".pdf", $"{_secretKey}.pdf");
+
+            /* Hash del documento sin codigo qr */
+            var hashDocument = CalculateMd5(documentPath);
+
+
+            /*Valores que se imprimiran el codigo qr*/
+            var printQrCode = new
             {
-                Affair = addDocumentDto.Affair,
-                Title = addDocumentDto.Title,
-                Url = urlFile,
-                User = User.GetSurname(),
-                Hash = hashDocument
+                Url = finalDocumentPath,
+                User = User.GetSurname()
             };
 
-            var contentQrCode = await _qrCode.GenerateQrCode(ConvertString(documentDto));
+            /* Generar cadena de bits */
+            var contentQrCode = await _qrCode.GenerateQrCode(ConvertString(printQrCode));
 
+            /*Ruta del codigo qr*/
             var qrCodeImagePath = await _storeFiles.SaveFile(contentQrCode, ".png", _codeQrContainer);
 
+            /* agregar el codigo qr al documento */
             await _qrCode.AddQrCodeFile(
                 qrCodeImagePath,
                 _codeQrContainer,
                 documentPath,
-                _documentContainer);
+                _documentContainer,
+                _secretKey);
 
+            /*Generando hash del documento mas el codigo qr*/
             var hashSecret = CalculateMd5(documentPath);
-
 
             var document = new Document
             {
                 /*Id = hashDocument,*/
                 Id = Guid.NewGuid().ToString(),
                 Affair = addDocumentDto.Affair,
-                Url = urlFile,
+                Url = finalDocumentPath,
                 Title = addDocumentDto.Title,
                 User = User.GetSurname(),
                 HashSecret = hashSecret,
@@ -93,26 +102,27 @@ namespace API.Controllers
 
             /*Completando el mapeo*/
             var userDto = _mapper.Map<UserDto>(user);
-            documentDto.Id = document.Id;
-            documentDto.UserDto = userDto;
-            documentDto.Hash = hashSecret;
+            var documentDto = new DocumentDto
+            {
+                Id = document.Id,
+                Affair = addDocumentDto.Affair,
+                Title = addDocumentDto.Title,
+                Url = finalDocumentPath,
+                User = User.GetSurname(),
+                Hash = hashSecret,
+                UserDto = userDto,
+            };
 
 
             if (resultContext > 0)
             {
-                /*_storeFiles.DeleteFile(documentPath, containerFile);
-                _storeFiles.DeleteFile(qrCodeImagePath, containerCodeQr);*/
+                await _storeFiles.DeleteFile(urlFile, _documentContainer);
                 return Ok(documentDto);
             }
 
             return BadRequest();
         }
 
-        [HttpGet]
-        public async Task<ActionResult> Get()
-        {
-            return Ok();
-        }
 
         private string CalculateMd5(string filename)
         {
@@ -122,10 +132,9 @@ namespace API.Controllers
             return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
         }
 
-        private string ConvertString(DocumentDto obj)
+        private string ConvertString(Object obj)
         {
-            var json = JsonConvert.SerializeObject(obj, Formatting.Indented);
-            return json;
+            return JsonConvert.SerializeObject(obj, Formatting.Indented);
         }
     }
 }
