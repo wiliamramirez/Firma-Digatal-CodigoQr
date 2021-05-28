@@ -68,7 +68,6 @@ namespace API.Controllers
                 User = User.GetSurname()
             };
 
-            /* Generar cadena de bits */
             var contentQrCode = await _qrCode.GenerateQrCode(ConvertString(printQrCode));
 
             /*Ruta del codigo qr*/
