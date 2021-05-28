@@ -37,6 +37,11 @@
     <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\68cd9dd1-5e27-4a82-8886-b5863bd2f31e.png" />
     <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\7b6cb45f-1a1b-4ecb-a2af-5ca61ab457be.png" />
     <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\e9064828-61b5-42a3-8cd0-675953d10c1f.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\Documents\44f1fab6-7c45-4ed4-93be-53e817002e63.pdf" />
+    <_ContentIncludedByDefault Remove="wwwroot\Documents\87e190bb-c753-44fb-b1ed-96c7a871a28f.pdf" />
+    <_ContentIncludedByDefault Remove="wwwroot\Documents\cabc39c4-d79b-4f18-a586-f6fac213ab9b.pdf" />
+    <_ContentIncludedByDefault Remove="wwwroot\Documents\ea52b320-03ef-42c7-bb4e-54f06d7becca.pdf" />
+    <_ContentIncludedByDefault Remove="wwwroot\Documents\fc4a37a0-f009-463e-a44b-e8ba184cd17e.pdf" />
   </ItemGroup>
 
   <ItemGroup>

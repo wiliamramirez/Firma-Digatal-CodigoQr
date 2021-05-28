@@ -30,7 +30,8 @@ namespace API.Services
             return ms.ToArray();
         }
 
-        public Task AddQrCodeFile(string qrCodeImagePath, string qrCodeContainer, string filePath, string fileContainer)
+        public Task AddQrCodeFile(string qrCodeImagePath, string qrCodeContainer, string filePath, string fileContainer,
+            string secretKey)
         {
             var fileDirectory = "";
             var qrCodeImageDirectory = "";
@@ -46,7 +47,7 @@ namespace API.Services
             {
                 var pdfReader = new PdfReader(fileDirectory);
                 var stamp = new PdfStamper(pdfReader,
-                    new FileStream(fileDirectory.Replace(".pdf", "[temp][file].pdf"), FileMode.Create));
+                    new FileStream(fileDirectory.Replace(".pdf", $"{secretKey}.pdf"), FileMode.Create));
 
                 var img = Image.GetInstance(qrCodeImageDirectory);
 
@@ -59,12 +60,6 @@ namespace API.Services
 
                 stamp.FormFlattening = true;
                 stamp.Close();
-
-                // now delete the original file and rename the temp file to the original file
-                File.Delete(fileDirectory);
-
-                
-                File.Move(fileDirectory.Replace(".pdf", "[temp][file].pdf"), fileDirectory);
             }
 
             return Task.FromResult(0);
