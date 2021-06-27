@@ -51,6 +51,7 @@ namespace API.Controllers
             {
                 return new UserDto
                 {
+                    Id = user.Id,
                     Email = user.Email,
                     Fullname = user.FullName,
                     LastName = user.LastName,
@@ -84,6 +85,7 @@ namespace API.Controllers
 
             return new UserDto
             {
+                Id = user.Id,
                 Email = user.Email,
                 Fullname = user.FullName,
                 LastName = user.LastName,
