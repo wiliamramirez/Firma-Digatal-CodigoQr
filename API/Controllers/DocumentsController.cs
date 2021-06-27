@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -8,12 +9,15 @@ using API.Entities;
 using API.Extensions;
 using API.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 
 namespace API.Controllers
 {
+    /*localhost:5000/api/Documents/listar*/
+    [AllowAnonymous]
     public class DocumentsController : BaseApiController
     {
         private readonly IStoreFilesServices _storeFiles;
@@ -33,7 +37,7 @@ namespace API.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost]
+        [HttpPost("crear")]
         public async Task<ActionResult<DocumentDto>> Post([FromForm] AddDocumentDto addDocumentDto)
         {
             var user = await _context.Users.FindAsync(User.GetId());
@@ -122,6 +126,11 @@ namespace API.Controllers
             return BadRequest();
         }
 
+        [HttpGet("listar")]
+        public async Task<ActionResult<List<DocumentDto>>> ListDocuments()
+        {
+            return Ok();
+        }
 
         private string CalculateMd5(string filename)
         {

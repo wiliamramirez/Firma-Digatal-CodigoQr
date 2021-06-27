@@ -53,7 +53,7 @@ namespace API.Controllers
                 {
                     Id = user.Id,
                     Email = user.Email,
-                    Fullname = user.FullName,
+                    FullName = user.FullName,
                     LastName = user.LastName,
                     Position = user.Position,
                     Token = _tokenService.CreateToken(user),
@@ -87,7 +87,7 @@ namespace API.Controllers
             {
                 Id = user.Id,
                 Email = user.Email,
-                Fullname = user.FullName,
+                FullName = user.FullName,
                 LastName = user.LastName,
                 Position = user.Position,
                 Token = _tokenService.CreateToken(user),
