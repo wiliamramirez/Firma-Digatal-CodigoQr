@@ -1,4 +1,5 @@
 using System;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -95,6 +96,7 @@ namespace API.Controllers
                 Dni = user.Dni
             };
         }
+        
 
         private async Task<bool> UserExists(string dni)
         {
