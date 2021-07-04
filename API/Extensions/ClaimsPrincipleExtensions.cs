@@ -12,7 +12,7 @@ namespace API.Extensions
 
         public static Guid GetId(this ClaimsPrincipal user)
         {
-            var id = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var id = user.FindFirst(ClaimTypes.Name)?.Value;
             return Guid.Parse(id);
         }
 
