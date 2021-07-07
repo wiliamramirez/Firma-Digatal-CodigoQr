@@ -32,14 +32,13 @@ namespace API
             services.AddCors(options =>
             {
                 options.AddPolicy("cors", builder =>
-                    {
-                        builder.WithOrigins("http://localhost:3000")
-                            .AllowAnyHeader()
-                            .AllowCredentials()
-                            .AllowAnyMethod();
-                    });
+                {
+                    builder.WithOrigins("http://localhost:3000")
+                        .AllowAnyHeader()
+                        .AllowCredentials()
+                        .AllowAnyMethod();
+                });
             });
-            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,8 +50,8 @@ namespace API
             }
 
             // app.UseHttpsRedirection();
-            
-            app.UseAuthorization();
+
+            // app.UseAuthorization();
 
             app.UseCors("cors");
 

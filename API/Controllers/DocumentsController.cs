@@ -9,7 +9,7 @@ using API.Entities;
 using API.Extensions;
 using API.Interfaces;
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -36,24 +36,24 @@ namespace API.Controllers
             _mapper = mapper;
         }
 
-        [HttpPost()]
-        public async Task<ActionResult<DocumentDto>> Post([FromForm] AddDocumentDto addDocumentDto)
+        [HttpPost]
+        public async Task<ActionResult<DocumentDto>> Post([FromForm] IFormFile file)
         {
-            
             var user = await _context.Users.FindAsync(User.GetId());
 
-            if (addDocumentDto.File == null)
+
+            if (file == null)
             {
                 return BadRequest();
             }
 
             /* Leer documento y alamcenar*/
             await using var memoryStream = new MemoryStream();
-            addDocumentDto.File.CopyTo(memoryStream);
+            file.CopyTo(memoryStream);
             var content = memoryStream.ToArray();
-            var extension = Path.GetExtension(addDocumentDto.File.FileName);
+            var extension = Path.GetExtension(file.FileName);
             var documentPath = await
-                _storeFiles.SaveFile(content, extension, _documentContainer, addDocumentDto.File.ContentType);
+                _storeFiles.SaveFile(content, extension, _documentContainer, file.ContentType);
 
             /*  */
             var urlFile = _storeFiles.GetUrl(_documentContainer, Path.GetFileName(documentPath));
@@ -88,13 +88,14 @@ namespace API.Controllers
             /*Generando hash del documento mas el codigo qr*/
             var hashSecret = CalculateMd5(documentPath);
 
+            //TODO : Corregir las valores de affair y title, no iran en esta tabla o entidad
             var document = new Document
             {
                 /*Id = hashDocument,*/
                 Id = Guid.NewGuid().ToString(),
-                Affair = addDocumentDto.Affair,
+                Affair = "Asunto",
                 Url = finalDocumentPath,
-                Title = addDocumentDto.Title,
+                Title = "Titulo",
                 User = User.GetSurname(),
                 HashSecret = hashSecret,
                 AppUser = user
@@ -108,8 +109,8 @@ namespace API.Controllers
             var documentDto = new DocumentDto
             {
                 Id = document.Id,
-                Affair = addDocumentDto.Affair,
-                Title = addDocumentDto.Title,
+                Affair = "Asunto",
+                Title = "Titulo",
                 Url = finalDocumentPath,
                 User = User.GetSurname(),
                 Hash = hashSecret,
@@ -126,11 +127,11 @@ namespace API.Controllers
             return BadRequest();
         }
 
-        [HttpGet()]
+        /*[HttpGet]
         public async Task<ActionResult<List<DocumentDto>>> ListDocuments()
         {
             return Ok();
-        }
+        }*/
 
         private string CalculateMd5(string filename)
         {

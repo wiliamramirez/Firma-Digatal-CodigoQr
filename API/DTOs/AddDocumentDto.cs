@@ -12,6 +12,6 @@ namespace API.DTOs
         [FileTypeValidation(FileTypeGroup.File)]
         public IFormFile File { get; set; }
 
-        public string Hmac { get; set; }
+        /*public string Hmac { get; set; }*/
     }
 }

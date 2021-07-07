@@ -42,6 +42,10 @@
     <_ContentIncludedByDefault Remove="wwwroot\Documents\cabc39c4-d79b-4f18-a586-f6fac213ab9b.pdf" />
     <_ContentIncludedByDefault Remove="wwwroot\Documents\ea52b320-03ef-42c7-bb4e-54f06d7becca.pdf" />
     <_ContentIncludedByDefault Remove="wwwroot\Documents\fc4a37a0-f009-463e-a44b-e8ba184cd17e.pdf" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\2c4f8858-03a5-4b1d-a643-4b05821ae503.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\2e40cfc2-d84e-4775-be27-4ef2cbedf077.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\68b740a5-fc03-47c2-af03-3cfb4a31c106.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\c975bd09-3e3f-40b0-8c4a-68277421272c.png" />
   </ItemGroup>
 
   <ItemGroup>
