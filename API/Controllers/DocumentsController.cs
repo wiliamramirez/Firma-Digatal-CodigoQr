@@ -10,6 +10,7 @@ using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 
@@ -23,6 +24,7 @@ namespace API.Controllers
         private readonly IQrCodeServices _qrCode;
         private readonly IMapper _mapper;
         private readonly string _documentContainer = "Documents";
+        private readonly string _documentContainerCheck = "DocumentCheck";
         private readonly string _codeQrContainer = "QrCodeImages";
         private readonly string _secretKey = "-SH";
 
@@ -38,8 +40,7 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<DocumentDto>> Post([FromForm] IFormFile file)
         {
-            var user = await _context.Users.FindAsync(User.GetId());
-
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == User.GetId());
 
             if (file == null)
             {
@@ -57,45 +58,40 @@ namespace API.Controllers
             /*  */
             var urlFile = _storeFiles.GetUrl(_documentContainer, Path.GetFileName(documentPath));
 
+            /*nombre-SH.pdf*/
+
             /*url de la ruta del archivo*/
-            var finalDocumentPath = urlFile.Replace(".pdf", $"{_secretKey}.pdf");
+            var finalDocumentUrl = urlFile.Replace(".pdf", $"{_secretKey}.pdf");
 
-            /*
-            /* Hash del documento sin codigo qr #1#
-            var hashDocument = CalculateMd5(documentPath);
-            */
+            var finalDocumentPath = documentPath.Replace(".pdf", $"{_secretKey}.pdf");
 
-
-            /*/*Valores que se imprimiran el codigo qr#1#
-            var printQrCode = new
-            {
-                Url = finalDocumentPath,
-                User = User.GetSurname()
-            };*/
-
-            var contentQrCode = await _qrCode.GenerateQrCode(finalDocumentPath);
+            /*START- CREAR CODIGO QR*/
+            var contentQrCode = await _qrCode.GenerateQrCode(finalDocumentUrl);
 
             /*Ruta del codigo qr */
             var qrCodeImagePath = await _storeFiles.SaveFile(contentQrCode, ".png", _codeQrContainer);
+            /*END- CREAR CODIGO QR*/
 
-            /* agregar el codigo qr al documento */
+
+            /* START - agregar el codigo qr al documento */
             await _qrCode.AddQrCodeFile(
                 qrCodeImagePath,
                 _codeQrContainer,
                 documentPath,
                 _documentContainer,
                 _secretKey);
+            /* END - agregar el codigo qr al documento */
+
 
             /*Generando hash del documento mas el codigo qr*/
-            var hashSecret = CalculateMd5(documentPath);
+            var hashSecret = CalculateMd5(finalDocumentPath);
 
             //TODO : Corregir las valores de affair y title, no iran en esta tabla o entidad
             var document = new Document
             {
-                /*Id = hashDocument,*/
                 Id = Guid.NewGuid().ToString(),
                 Affair = "Asunto",
-                Url = finalDocumentPath,
+                Url = finalDocumentUrl,
                 Title = "Titulo",
                 User = User.GetSurname(),
                 HashSecret = hashSecret,
@@ -107,15 +103,15 @@ namespace API.Controllers
 
             /*Completando el mapeo*/
             var userDto = _mapper.Map<UserDto>(user);
+
             var documentDto = new DocumentDto
             {
                 Id = document.Id,
                 Affair = "Asunto",
                 Title = "Titulo",
-                Url = finalDocumentPath,
+                Url = finalDocumentUrl,
                 User = User.GetSurname(),
                 Hash = hashSecret,
-                UserDto = userDto,
             };
 
 
@@ -128,11 +124,48 @@ namespace API.Controllers
             return BadRequest();
         }
 
-        /*[HttpGet]
-        public async Task<ActionResult<List<DocumentDto>>> ListDocuments()
+        /*/api/documents/check*/
+        [HttpPost("check")]
+        public async Task<ActionResult<DocumentDto>> CheckDocument([FromForm] IFormFile file)
         {
-            return Ok();
-        }*/
+            if (file == null)
+            {
+                return BadRequest();
+            }
+
+            /* Leer documento y alamacenar*/
+            await using var memoryStream = new MemoryStream();
+            await file.CopyToAsync(memoryStream);
+            var content = memoryStream.ToArray();
+            var extension = Path.GetExtension(file.FileName);
+            var documentPath = await
+                _storeFiles.SaveFile(content, extension, _documentContainerCheck, file.ContentType);
+
+            /*Retornar hash de documento*/
+            var hashDocument = CalculateMd5(documentPath);
+
+            /*  */
+            var document = await _context.Documents
+                .FirstOrDefaultAsync(x => x.HashSecret == hashDocument);
+
+            if (document == null)
+            {
+                return new DocumentDto();
+            }
+
+            var documentDto = new DocumentDto
+            {
+                Id = document.Id,
+                Affair = document.Affair,
+                Hash = document.HashSecret,
+                Title = document.Title,
+                Url = document.Url,
+                User = document.User
+            };
+
+            return documentDto;
+        }
+
 
         private string CalculateMd5(string filename)
         {

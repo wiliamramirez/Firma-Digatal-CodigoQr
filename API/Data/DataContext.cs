@@ -9,6 +9,7 @@ namespace API.Data
         {
         }
 
+        /*Tablas*/
         public DbSet<Document> Documents { get; set; }
         public DbSet<AppUser> Users { get; set; }
     }
