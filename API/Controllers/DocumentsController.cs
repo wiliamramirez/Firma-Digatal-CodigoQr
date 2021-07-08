@@ -49,7 +49,7 @@ namespace API.Controllers
 
             /* Leer documento y alamcenar*/
             await using var memoryStream = new MemoryStream();
-            file.CopyTo(memoryStream);
+            await file.CopyToAsync(memoryStream);
             var content = memoryStream.ToArray();
             var extension = Path.GetExtension(file.FileName);
             var documentPath = await
@@ -72,7 +72,7 @@ namespace API.Controllers
                 User = User.GetSurname()
             };
 
-            var contentQrCode = await _qrCode.GenerateQrCode(ConvertString(printQrCode));
+            var contentQrCode = await _qrCode.GenerateQrCode(finalDocumentPath);
 
             /*Ruta del codigo qr*/
             var qrCodeImagePath = await _storeFiles.SaveFile(contentQrCode, ".png", _codeQrContainer);

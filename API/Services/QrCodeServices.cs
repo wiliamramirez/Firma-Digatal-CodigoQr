@@ -52,7 +52,7 @@ namespace API.Services
                 var img = Image.GetInstance(qrCodeImageDirectory);
 
                 // set the position in the document where you want the watermark to appear (0,0 = bottom left corner of the page)
-                img.SetAbsolutePosition(360, 10);
+                img.SetAbsolutePosition(460, 10);
 
 
                 var waterMark = stamp.GetOverContent(pdfReader.NumberOfPages);
