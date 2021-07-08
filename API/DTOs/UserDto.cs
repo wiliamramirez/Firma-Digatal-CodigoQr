@@ -10,7 +10,7 @@ namespace API.DTOs
         public string Username { get; set; }
         public string Token { get; set; }
         public string LastName { get; set; }
-        public string Fullname { get; set; }
+        public string FullName { get; set; }
         public string Position { get; set; }
         public string Dni { get; set; }
     }

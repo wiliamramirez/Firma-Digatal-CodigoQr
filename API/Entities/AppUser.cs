@@ -13,7 +13,10 @@ namespace API.Entities
         public string UserName { get; set; }
         public string FullName { get; set; }
         public string LastName { get; set; }
+
         public string Position { get; set; }
+
+        /*public string SecretKeyHmac { get; set; }*/
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         /*Relacion con la tabla documents*/

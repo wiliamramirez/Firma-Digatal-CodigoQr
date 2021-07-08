@@ -9,6 +9,7 @@ namespace API.Entities
         public string Affair { get; set; }
         public string Title { get; set; }
         public string HashSecret { get; set; }
+        
         public string User { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

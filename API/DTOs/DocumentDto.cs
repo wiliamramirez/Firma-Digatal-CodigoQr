@@ -8,7 +8,5 @@ namespace API.DTOs
         public string Affair { get; set; }
         public string Title { get; set; }
         public string Hash { get; set; }
-
-        public UserDto UserDto { get; set; }
     }
 }

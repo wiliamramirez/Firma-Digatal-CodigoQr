@@ -1,4 +1,5 @@
 using System;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -51,8 +52,9 @@ namespace API.Controllers
             {
                 return new UserDto
                 {
+                    Id = user.Id,
                     Email = user.Email,
-                    Fullname = user.FullName,
+                    FullName = user.FullName,
                     LastName = user.LastName,
                     Position = user.Position,
                     Token = _tokenService.CreateToken(user),
@@ -84,8 +86,9 @@ namespace API.Controllers
 
             return new UserDto
             {
+                Id = user.Id,
                 Email = user.Email,
-                Fullname = user.FullName,
+                FullName = user.FullName,
                 LastName = user.LastName,
                 Position = user.Position,
                 Token = _tokenService.CreateToken(user),
@@ -93,6 +96,7 @@ namespace API.Controllers
                 Dni = user.Dni
             };
         }
+        
 
         private async Task<bool> UserExists(string dni)
         {
