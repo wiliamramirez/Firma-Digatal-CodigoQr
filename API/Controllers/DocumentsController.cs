@@ -11,7 +11,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 
 namespace API.Controllers
@@ -61,12 +60,12 @@ namespace API.Controllers
             /*nombre-SH.pdf*/
 
             /*url de la ruta del archivo*/
-            var finalDocumentUrl = urlFile.Replace(".pdf", $"{_secretKey}.pdf");
+            var finalUrlDocument = urlFile.Replace(".pdf", $"{_secretKey}.pdf");
 
-            var finalDocumentPath = documentPath.Replace(".pdf", $"{_secretKey}.pdf");
+            var finalPathDocument = documentPath.Replace(".pdf", $"{_secretKey}.pdf");
 
             /*START- CREAR CODIGO QR*/
-            var contentQrCode = await _qrCode.GenerateQrCode(finalDocumentUrl);
+            var contentQrCode = await _qrCode.GenerateQrCode(finalUrlDocument);
 
             /*Ruta del codigo qr */
             var qrCodeImagePath = await _storeFiles.SaveFile(contentQrCode, ".png", _codeQrContainer);
@@ -84,14 +83,14 @@ namespace API.Controllers
 
 
             /*Generando hash del documento mas el codigo qr*/
-            var hashSecret = CalculateMd5(finalDocumentPath);
+            var hashSecret = CalculateMd5(finalPathDocument);
 
             //TODO : Corregir las valores de affair y title, no iran en esta tabla o entidad
             var document = new Document
             {
                 Id = Guid.NewGuid().ToString(),
                 Affair = "Asunto",
-                Url = finalDocumentUrl,
+                Url = finalUrlDocument,
                 Title = "Titulo",
                 User = User.GetSurname(),
                 HashSecret = hashSecret,
@@ -100,16 +99,14 @@ namespace API.Controllers
 
             _context.Documents.Add(document);
             var resultContext = await _context.SaveChangesAsync();
-
-            /*Completando el mapeo*/
-            var userDto = _mapper.Map<UserDto>(user);
+            
 
             var documentDto = new DocumentDto
             {
                 Id = document.Id,
                 Affair = "Asunto",
                 Title = "Titulo",
-                Url = finalDocumentUrl,
+                Url = finalUrlDocument,
                 User = User.GetSurname(),
                 Hash = hashSecret,
             };
@@ -117,7 +114,8 @@ namespace API.Controllers
 
             if (resultContext > 0)
             {
-                await _storeFiles.DeleteFile(urlFile, _documentContainer);
+                await _storeFiles.DeleteFile(documentPath, _documentContainer);
+                await _storeFiles.DeleteFile(qrCodeImagePath, _codeQrContainer);
                 return Ok(documentDto);
             }
 
@@ -147,6 +145,8 @@ namespace API.Controllers
             /*  */
             var document = await _context.Documents
                 .FirstOrDefaultAsync(x => x.HashSecret == hashDocument);
+            
+            await _storeFiles.DeleteFile(documentPath, _documentContainerCheck);
 
             if (document == null)
             {

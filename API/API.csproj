@@ -47,6 +47,8 @@
     <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\68b740a5-fc03-47c2-af03-3cfb4a31c106.png" />
     <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\c975bd09-3e3f-40b0-8c4a-68277421272c.png" />
     <_ContentIncludedByDefault Remove="wwwroot\Documents\96f7c6ea-283b-4de9-9915-bae1a43caae1-SH.pdf" />
+    <_ContentIncludedByDefault Remove="wwwroot\DocumentCheck\49a0e4c5-33a6-4c5f-b623-1550caa0a361.pdf" />
+    <_ContentIncludedByDefault Remove="wwwroot\DocumentCheck\eb96d5e6-508f-4831-b4ac-2bfe7395b1a5.pdf" />
   </ItemGroup>
 
   <ItemGroup>
