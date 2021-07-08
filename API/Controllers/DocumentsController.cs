@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -61,20 +60,22 @@ namespace API.Controllers
             /*url de la ruta del archivo*/
             var finalDocumentPath = urlFile.Replace(".pdf", $"{_secretKey}.pdf");
 
-            /* Hash del documento sin codigo qr */
+            /*
+            /* Hash del documento sin codigo qr #1#
             var hashDocument = CalculateMd5(documentPath);
+            */
 
 
-            /*Valores que se imprimiran el codigo qr*/
+            /*/*Valores que se imprimiran el codigo qr#1#
             var printQrCode = new
             {
                 Url = finalDocumentPath,
                 User = User.GetSurname()
-            };
+            };*/
 
             var contentQrCode = await _qrCode.GenerateQrCode(finalDocumentPath);
 
-            /*Ruta del codigo qr*/
+            /*Ruta del codigo qr */
             var qrCodeImagePath = await _storeFiles.SaveFile(contentQrCode, ".png", _codeQrContainer);
 
             /* agregar el codigo qr al documento */
@@ -141,9 +142,9 @@ namespace API.Controllers
             return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
         }
 
-        private string ConvertString(Object obj)
+        /*private string ConvertString(Object obj)
         {
             return JsonConvert.SerializeObject(obj, Formatting.Indented);
-        }
+        }*/
     }
 }
