@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using API.Data;
@@ -85,7 +87,6 @@ namespace API.Controllers
             /*Generando hash del documento mas el codigo qr*/
             var hashSecret = CalculateMd5(finalPathDocument);
 
-            //TODO : Corregir las valores de affair y title, no iran en esta tabla o entidad
             var document = new Document
             {
                 Id = Guid.NewGuid(),
@@ -94,7 +95,7 @@ namespace API.Controllers
             };
 
             _context.Documents.Add(document);
-            
+
 
             var documentDetails = new DocumentDetail
             {
@@ -104,12 +105,11 @@ namespace API.Controllers
                 User = User.GetSurname(),
                 HashSecret = hashSecret,
                 Document = document
-                
             };
             _context.DocumentDetails.Add(documentDetails);
-            
+
             var resultContext = await _context.SaveChangesAsync();
-            
+
 
             var documentDto = new DocumentDto
             {
@@ -154,7 +154,6 @@ namespace API.Controllers
 
             /*  */
             var document = await _context.Documents
-
                 .Include(x => x.DocumentDetail)
                 .FirstOrDefaultAsync(x => x.DocumentDetail.HashSecret == hashDocument);
 
@@ -177,6 +176,33 @@ namespace API.Controllers
             };
 
             return documentDto;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<DocumentDto>>> ListDocuments()
+        {
+            var documents = await _context.Documents.Where(x => x.AppUserId == User.GetId())
+                .Include(x => x.DocumentDetail)
+                .ToListAsync();
+
+            var documentsDto = new List<DocumentDto>();
+
+            foreach (var document in documents)
+            {
+                var documentDto = new DocumentDto
+                {
+                    Id = document.Id,
+                    Affair = document.DocumentDetail.Affair,
+                    Title = document.DocumentDetail.Title,
+                    User = document.DocumentDetail.User,
+                    Hash = document.DocumentDetail.HashSecret,
+                    Url = document.Url,
+                };
+
+                documentsDto.Add(documentDto);
+            }
+
+            return documentsDto;
         }
 
 
