@@ -10,6 +10,7 @@ namespace API.Helpers
         {
             CreateMap<AppUser, RegisterDto>().ReverseMap();
             CreateMap<AppUser, UserDto>().ReverseMap();
+            CreateMap<Document, DocumentDto>().ReverseMap();
         }
     }
 }
