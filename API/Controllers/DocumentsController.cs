@@ -210,6 +210,8 @@ namespace API.Controllers
         {
             using var md5 = MD5.Create();
             using var stream = System.IO.File.OpenRead(filename);
+            
+            
             var hash = md5.ComputeHash(stream);
             return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
         }

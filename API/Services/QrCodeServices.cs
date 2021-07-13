@@ -36,31 +36,28 @@ namespace API.Services
             var fileDirectory = "";
             var qrCodeImageDirectory = "";
 
-            if (qrCodeImagePath != null && filePath != null)
-            {
-                fileDirectory = Path.Combine(_environment.WebRootPath, fileContainer, Path.GetFileName(filePath));
-                qrCodeImageDirectory = Path.Combine(_environment.WebRootPath, qrCodeContainer,
-                    Path.GetFileName(qrCodeImagePath));
-            }
+        
+            fileDirectory = Path.Combine(_environment.WebRootPath, fileContainer, Path.GetFileName(filePath));
+            qrCodeImageDirectory = Path.Combine(_environment.WebRootPath, qrCodeContainer,
+                Path.GetFileName(qrCodeImagePath));
+    
 
-            if (File.Exists(fileDirectory) && File.Exists(qrCodeImageDirectory))
-            {
-                var pdfReader = new PdfReader(fileDirectory);
-                var stamp = new PdfStamper(pdfReader,
-                    new FileStream(fileDirectory.Replace(".pdf", $"{secretKey}.pdf"), FileMode.Create));
+            var pdfReader = new PdfReader(fileDirectory);
+            var fileStream = new FileStream(fileDirectory.Replace(".pdf", $"{secretKey}.pdf"), FileMode.Create);
+            var stamp = new PdfStamper(pdfReader, fileStream );
 
-                var img = Image.GetInstance(qrCodeImageDirectory);
+            var img = Image.GetInstance(qrCodeImageDirectory);
 
-                // set the position in the document where you want the watermark to appear (0,0 = bottom left corner of the page)
-                img.SetAbsolutePosition(460, 10);
+            // set the position in the document where you want the watermark to appear (0,0 = bottom left corner of the page)
+            img.SetAbsolutePosition(460, 10);
 
 
-                var waterMark = stamp.GetOverContent(pdfReader.NumberOfPages);
-                waterMark.AddImage(img);
-
-                stamp.FormFlattening = true;
-                stamp.Close();
-            }
+            var waterMark = stamp.GetOverContent(pdfReader.NumberOfPages);
+            waterMark.AddImage(img);
+            
+            stamp.FormFlattening = true;
+            stamp.Close();
+            fileStream.Close();
 
             return Task.FromResult(0);
         }
