@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using API.Data;
+using API.Data.Migrations;
 using API.DTOs;
 using API.Entities;
 using API.Interfaces;
@@ -39,9 +40,9 @@ namespace API.Controllers
                 .ThenInclude(y => y.Role)
                 .ToListAsync();
 
-            if (listUsers == null)
+            if (listUsers.Count()==0)
             {
-                return BadRequest("No existen usuarios registrados");
+                return new List<ListUserDto>();
             }
         
             foreach (var user in listUsers)
