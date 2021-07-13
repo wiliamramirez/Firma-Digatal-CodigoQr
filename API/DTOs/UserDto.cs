@@ -1,5 +1,7 @@
 
 using System;
+using System.Collections.Generic;
+
 
 namespace API.DTOs
 {
@@ -13,5 +15,6 @@ namespace API.DTOs
         public string FullName { get; set; }
         public string Position { get; set; }
         public string Dni { get; set; }
+        public List<RoleDto> Roles { get; set; }
     }
 }
