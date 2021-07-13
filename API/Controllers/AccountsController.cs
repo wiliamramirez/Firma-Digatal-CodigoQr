@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,6 +48,27 @@ namespace API.Controllers
             user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
             user.PasswordSalt = hmac.Key;
 
+            var rolesDto = new List<RoleDto>();
+
+            foreach (var role in registerDto.Roles)
+            {
+                var userRole = new UserRole
+                {
+                    RoleId = role.Id,
+                    AppUser = user
+                };
+
+                _context.UserRoles.Add(userRole);
+
+                var rol = await _context.Roles.FirstOrDefaultAsync(x => x.Id == userRole.RoleId);
+                var rolDto = new RoleDto
+                {
+                    Name = rol.Name
+                };
+                rolesDto.Add(rolDto);
+            }
+
+
             _context.Users.Add(user);
             var result = await _context.SaveChangesAsync();
 
@@ -64,7 +83,8 @@ namespace API.Controllers
                     Position = user.Position,
                     Token = _tokenService.CreateToken(user),
                     Username = user.UserName,
-                    Dni = user.Dni
+                    Dni = user.Dni,
+                    Roles = rolesDto
                 };
             }
 
@@ -94,7 +114,7 @@ namespace API.Controllers
             }
 
             var rolesDto = new List<RoleDto>();
-            
+
             foreach (var role in user.UserRoles)
             {
                 var rolDto = new RoleDto

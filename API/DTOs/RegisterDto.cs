@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace API.DTOs
 {
     public class RegisterDto
@@ -9,5 +11,6 @@ namespace API.DTOs
         public string Position { get; set; }
         public string LastName { get; set; }
         public string Fullname { get; set; }
+        public List<AddRoleDto> Roles { get; set; }
     }
 }
