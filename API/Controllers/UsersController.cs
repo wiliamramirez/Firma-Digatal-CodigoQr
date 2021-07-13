@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -17,7 +18,6 @@ namespace API.Controllers
     public class UsersController : BaseApiController
     {
         private readonly DataContext _context;
-
         private readonly ITokenService _tokenService;
         private readonly IMapper _mapper;
 
@@ -28,6 +28,53 @@ namespace API.Controllers
             _mapper= mapper;
         }
 
+        [HttpGet("all")]
+        public async Task<ActionResult<List<ListUserDto>>> GetAllUser()
+        {
+            var usersDto = new List<ListUserDto>();
+            
+            var listUsers = await _context.Users
+                .Where(x=>x.UserName!="admin")
+                .Include(x => x.UserRoles)
+                .ThenInclude(y => y.Role)
+                .ToListAsync();
+
+            if (listUsers == null)
+            {
+                return BadRequest("No existen usuarios registrados");
+            }
+        
+            foreach (var user in listUsers)
+            {
+                var rolesDto = new List<RoleDto>();
+                
+                foreach (var role in user.UserRoles)
+                {
+                    var rolDto = new RoleDto
+                    {
+                        Name = role.Role.Name
+                    };
+                    
+                    rolesDto.Add(rolDto);
+                }
+                var userDto = new ListUserDto
+                {
+                    Dni = user.Dni,
+                    Email = user.Email,
+                    Id = user.Id,
+                    Position = user.Position,
+                    Roles = rolesDto,
+                    Username = user.UserName,
+                    FullName = user.FullName,
+                    LastName = user.LastName
+                };
+                usersDto.Add(userDto);
+            }
+
+            return usersDto;
+        }
+        
+        
         [HttpGet]
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {

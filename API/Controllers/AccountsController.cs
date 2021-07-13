@@ -31,67 +31,6 @@ namespace API.Controllers
             _tokenService = tokenService;
         }
 
-        [HttpPost("register")]
-        public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
-        {
-            if (await UserExists(registerDto.Dni))
-            {
-                return BadRequest("Ya existe un usuario con este Dni");
-            }
-
-            var user = _mapper.Map<AppUser>(registerDto);
-
-            using var hmac = new HMACSHA512();
-
-            user.Id = Guid.NewGuid();
-            user.UserName = registerDto.Username.ToLower();
-            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
-            user.PasswordSalt = hmac.Key;
-
-            var rolesDto = new List<RoleDto>();
-
-            foreach (var role in registerDto.Roles)
-            {
-                var userRole = new UserRole
-                {
-                    RoleId = role.Id,
-                    AppUser = user
-                };
-
-                _context.UserRoles.Add(userRole);
-
-                var rol = await _context.Roles.FirstOrDefaultAsync(x => x.Id == userRole.RoleId);
-                var rolDto = new RoleDto
-                {
-                    Name = rol.Name
-                };
-                rolesDto.Add(rolDto);
-            }
-
-
-            _context.Users.Add(user);
-            var result = await _context.SaveChangesAsync();
-
-            if (result > 0)
-            {
-                return new UserDto
-                {
-                    Id = user.Id,
-                    Email = user.Email,
-                    FullName = user.FullName,
-                    LastName = user.LastName,
-                    Position = user.Position,
-                    Token = _tokenService.CreateToken(user),
-                    Username = user.UserName,
-                    Dni = user.Dni,
-                    Roles = rolesDto
-                };
-            }
-
-
-            return BadRequest("No se pudo registrar el usuario");
-        }
-
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
