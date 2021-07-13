@@ -8,7 +8,6 @@ namespace API.Entities
         public Guid AppUserId { get; set; }
         public AppUser AppUser { get; set; }
         public Guid RoleId { get; set; }
-        public Role Roles { get; set; }
-        
+        public Role Role { get; set; }
     }
-}   
+}
