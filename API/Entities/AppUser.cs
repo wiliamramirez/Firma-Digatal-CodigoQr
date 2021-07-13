@@ -21,5 +21,8 @@ namespace API.Entities
 
         /*Relacion con la tabla documents*/
         public ICollection<Document> Documents { get; set; }
+        /*Relacion con la tabla Roles*/
+
+        public ICollection<UserRole> UserRoles { get; set; }
     }
 }

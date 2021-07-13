@@ -47,6 +47,34 @@
     <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\68b740a5-fc03-47c2-af03-3cfb4a31c106.png" />
     <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\c975bd09-3e3f-40b0-8c4a-68277421272c.png" />
     <_ContentIncludedByDefault Remove="wwwroot\Documents\96f7c6ea-283b-4de9-9915-bae1a43caae1-SH.pdf" />
+    <_ContentIncludedByDefault Remove="wwwroot\DocumentCheck\49a0e4c5-33a6-4c5f-b623-1550caa0a361.pdf" />
+    <_ContentIncludedByDefault Remove="wwwroot\DocumentCheck\8aca37c0-dce4-42b1-81ef-d1ed05898333.pdf" />
+    <_ContentIncludedByDefault Remove="wwwroot\DocumentCheck\bf9cc218-453c-4401-8c94-43516a7840a5.pdf" />
+    <_ContentIncludedByDefault Remove="wwwroot\DocumentCheck\eb96d5e6-508f-4831-b4ac-2bfe7395b1a5.pdf" />
+    <_ContentIncludedByDefault Remove="wwwroot\DocumentCheck\f7475a19-e4b4-4fa6-a5ea-66677202c64a.pdf" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\001d9f19-cd82-47cf-a564-409b2b534b6c.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\028adc71-ffc2-4d96-b8de-2294d3f29df6.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\07ec4c14-2165-4760-bf7c-cf1239491f12.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\2f0cf4fc-281d-4d86-b6b1-0d757d03efd9.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\3215f25f-d148-4808-ad0d-4b3d6b02fe4b.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\45d1a88e-baad-4f6e-a25e-1edccc6dd83c.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\4803eeee-a007-4129-a3c6-812125f24ace.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\485b0fb3-b5cc-4e3a-8f6d-b94d2ec1d98f.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\487f43bf-3e7a-43cd-8f9e-903fbe9048b7.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\554088f0-bb62-4655-beda-d12e126b64b3.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\87828463-4c61-4932-b277-0ae23390669b.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\881c9eeb-21e1-4c40-8faf-c66217bee05c.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\bad430ea-b842-4e07-b9c8-89510f303c3d.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\bc352ebd-426d-4311-814c-f501ce173459.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\cbb4081b-9bd1-4cab-af0a-3d41f1cd694f.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\cdbf31d3-6c3f-4350-95b3-d760ff1f3f5d.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\d6821df8-efef-4a0f-b792-f078c42b6a72.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\d71bd599-7b67-430c-8c12-4db68e7d223a.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\d82670b8-43e2-4927-92b9-63a6b8341222.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\dc6e9999-3bf2-4c8c-97d3-7067bb544f1f.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\dee75152-942e-4759-bd68-76275dcb00a0.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\f23c8907-9ecc-46c2-9a08-83b4567c2099.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\QrCodeImages\fb8d343f-2079-4289-9d24-3647922c06ae.png" />
   </ItemGroup>
 
   <ItemGroup>

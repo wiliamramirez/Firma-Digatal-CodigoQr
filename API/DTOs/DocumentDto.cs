@@ -1,8 +1,10 @@
+using System;
+
 namespace API.DTOs
 {
     public class DocumentDto
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         public string Url { get; set; }
         public string User { get; set; }
         public string Affair { get; set; }

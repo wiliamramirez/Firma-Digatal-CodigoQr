@@ -15,11 +15,14 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers
 {
     [AllowAnonymous]
+    //BaseApiController tiene la base de la url api/[controller] en controller dentro del corchete significa que va tomar el nombre del controlador
+
     public class AccountsController : BaseApiController
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
-        private readonly ITokenService _tokenService;
+        private readonly DataContext _context; //instancia a la orm 
+        private readonly IMapper _mapper; //permite instanciar clases sin utilizar otras
+        private readonly ITokenService _tokenService; //instancia del servicio del toquen 
+        //se instancia para guradar toquen pero no para ver si existe 
 
         public AccountsController(DataContext context, IMapper mapper, ITokenService tokenService)
         {

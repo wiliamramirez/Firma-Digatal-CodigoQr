@@ -3,14 +3,16 @@ using System;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210712235125_AddRoleList11")]
+    partial class AddRoleList11
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,35 +62,13 @@ namespace API.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("AppUserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Url")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppUserId");
-
-                    b.ToTable("Documents");
-                });
-
-            modelBuilder.Entity("API.Entities.DocumentDetail", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Affair")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<Guid?>("AppUserId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("DocumentId")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("HashSecret")
@@ -97,15 +77,17 @@ namespace API.Data.Migrations
                     b.Property<string>("Title")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Url")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("User")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DocumentId")
-                        .IsUnique();
+                    b.HasIndex("AppUserId");
 
-                    b.ToTable("DocumentDetails");
+                    b.ToTable("Documents");
                 });
 
             modelBuilder.Entity("API.Entities.Role", b =>
@@ -144,22 +126,9 @@ namespace API.Data.Migrations
                 {
                     b.HasOne("API.Entities.AppUser", "AppUser")
                         .WithMany("Documents")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AppUserId");
 
                     b.Navigation("AppUser");
-                });
-
-            modelBuilder.Entity("API.Entities.DocumentDetail", b =>
-                {
-                    b.HasOne("API.Entities.Document", "Document")
-                        .WithOne("DocumentDetail")
-                        .HasForeignKey("API.Entities.DocumentDetail", "DocumentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Document");
                 });
 
             modelBuilder.Entity("API.Entities.UserRole", b =>
@@ -186,11 +155,6 @@ namespace API.Data.Migrations
                     b.Navigation("Documents");
 
                     b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("API.Entities.Document", b =>
-                {
-                    b.Navigation("DocumentDetail");
                 });
 
             modelBuilder.Entity("API.Entities.Role", b =>

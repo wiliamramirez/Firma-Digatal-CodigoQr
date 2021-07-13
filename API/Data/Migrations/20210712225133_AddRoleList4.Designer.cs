@@ -3,14 +3,16 @@ using System;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace API.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210712225133_AddRoleList4")]
+    partial class AddRoleList4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,18 +48,28 @@ namespace API.Data.Migrations
                     b.Property<string>("Position")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RoleId1")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("UserName")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RoleId1");
 
                     b.ToTable("Users");
                 });
 
             modelBuilder.Entity("API.Entities.Document", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Affair")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("AppUserId")
@@ -66,7 +78,16 @@ namespace API.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("HashSecret")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Url")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("User")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -76,45 +97,9 @@ namespace API.Data.Migrations
                     b.ToTable("Documents");
                 });
 
-            modelBuilder.Entity("API.Entities.DocumentDetail", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Affair")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("DocumentId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("HashSecret")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("User")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DocumentId")
-                        .IsUnique();
-
-                    b.ToTable("DocumentDetails");
-                });
-
             modelBuilder.Entity("API.Entities.Role", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<string>("Id")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
@@ -125,19 +110,13 @@ namespace API.Data.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("API.Entities.UserRole", b =>
+            modelBuilder.Entity("API.Entities.AppUser", b =>
                 {
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("TEXT");
+                    b.HasOne("API.Entities.Role", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId1");
 
-                    b.Property<Guid>("AppUserId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("RoleId", "AppUserId");
-
-                    b.HasIndex("AppUserId");
-
-                    b.ToTable("UserRoles");
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("API.Entities.Document", b =>
@@ -151,51 +130,14 @@ namespace API.Data.Migrations
                     b.Navigation("AppUser");
                 });
 
-            modelBuilder.Entity("API.Entities.DocumentDetail", b =>
-                {
-                    b.HasOne("API.Entities.Document", "Document")
-                        .WithOne("DocumentDetail")
-                        .HasForeignKey("API.Entities.DocumentDetail", "DocumentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Document");
-                });
-
-            modelBuilder.Entity("API.Entities.UserRole", b =>
-                {
-                    b.HasOne("API.Entities.AppUser", "AppUser")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("API.Entities.Role", "Roles")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AppUser");
-
-                    b.Navigation("Roles");
-                });
-
             modelBuilder.Entity("API.Entities.AppUser", b =>
                 {
                     b.Navigation("Documents");
-
-                    b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("API.Entities.Document", b =>
-                {
-                    b.Navigation("DocumentDetail");
                 });
 
             modelBuilder.Entity("API.Entities.Role", b =>
                 {
-                    b.Navigation("UserRoles");
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

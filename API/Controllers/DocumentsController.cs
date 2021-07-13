@@ -89,16 +89,26 @@ namespace API.Controllers
             //TODO : Corregir las valores de affair y title, no iran en esta tabla o entidad
             var document = new Document
             {
-                Id = Guid.NewGuid().ToString(),
-                Affair = "Asunto",
+                Id = Guid.NewGuid(),
                 Url = finalDocumentUrl,
-                Title = "Titulo",
-                User = User.GetSurname(),
-                HashSecret = hashSecret,
                 AppUser = user
             };
 
             _context.Documents.Add(document);
+            
+
+            var documentDetails = new DocumentDetail
+            {
+                Id = Guid.NewGuid(),
+                Affair = "cualquier cosa",
+                Title = "otra cosa que no es la anterior",
+                User = User.GetSurname(),
+                HashSecret = hashSecret,
+                Document = document
+                
+            };
+            _context.DocumentDetails.Add(documentDetails);
+            
             var resultContext = await _context.SaveChangesAsync();
 
             /*Completando el mapeo*/
@@ -146,7 +156,8 @@ namespace API.Controllers
 
             /*  */
             var document = await _context.Documents
-                .FirstOrDefaultAsync(x => x.HashSecret == hashDocument);
+                .Include(x=>x.DocumentDetail)
+                .FirstOrDefaultAsync(x => x.DocumentDetail.HashSecret == hashDocument);
 
             if (document == null)
             {
@@ -156,11 +167,11 @@ namespace API.Controllers
             var documentDto = new DocumentDto
             {
                 Id = document.Id,
-                Affair = document.Affair,
-                Hash = document.HashSecret,
-                Title = document.Title,
                 Url = document.Url,
-                User = document.User
+                Affair = document.DocumentDetail.Affair,
+                Hash = document.DocumentDetail.HashSecret,
+                Title = document.DocumentDetail.Title,
+                User = document.DocumentDetail.User
             };
 
             return documentDto;

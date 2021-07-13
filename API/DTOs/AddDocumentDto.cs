@@ -14,4 +14,27 @@ namespace API.DTOs
 
         /*public string Hmac { get; set; }*/
     }
-}
+}  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
