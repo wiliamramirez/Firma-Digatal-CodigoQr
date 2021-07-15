@@ -1,13 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using API.Data;
 using API.DTOs;
-using API.Entities;
 using API.Interfaces;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,15 +16,13 @@ namespace API.Controllers
     public class AccountsController : BaseApiController
     {
         private readonly DataContext _context; //instancia a la orm 
-        private readonly IMapper _mapper; //permite instanciar clases sin utilizar otras
 
         private readonly ITokenService _tokenService; //instancia del servicio del toquen 
         //se instancia para guradar toquen pero no para ver si existe 
 
-        public AccountsController(DataContext context, IMapper mapper, ITokenService tokenService)
+        public AccountsController(DataContext context, ITokenService tokenService)
         {
             _context = context;
-            _mapper = mapper;
             _tokenService = tokenService;
         }
 
@@ -76,12 +71,6 @@ namespace API.Controllers
                 Dni = user.Dni,
                 Roles = rolesDto
             };
-        }
-
-
-        private async Task<bool> UserExists(string dni)
-        {
-            return await _context.Users.AnyAsync(x => x.Dni == dni);
         }
     }
 }

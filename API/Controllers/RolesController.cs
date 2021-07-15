@@ -13,7 +13,7 @@ namespace API.Controllers
 
 {
     [AllowAnonymous]
-    public class RolesController: BaseApiController
+    public class RolesController : BaseApiController
     {
         private readonly DataContext _context;
 
@@ -21,11 +21,9 @@ namespace API.Controllers
         public RolesController(DataContext context)
         {
             _context = context;
-
         }
 
         [HttpGet]
-
         public async Task<ActionResult<List<RoleDto>>> GetRole()
 
         {
@@ -38,18 +36,17 @@ namespace API.Controllers
                 {
                     Name = role.Name
                 };
-                
+
                 rolesDto.Add(roleDto);
             }
 
             return rolesDto;
-            
         }
 
         [HttpPost("add")]
         public async Task<ActionResult<RoleDto>> AddRole(RoleDto roleDto)
         {
-            if (roleDto==null)
+            if (roleDto == null)
             {
                 return BadRequest();
             }
@@ -61,14 +58,14 @@ namespace API.Controllers
             };
 
             _context.Roles.Add(role);
-            var resultContex = await _context.SaveChangesAsync();
+            var resultContext = await _context.SaveChangesAsync();
 
             var resultRoleDto = new RoleDto
             {
                 Name = roleDto.Name
             };
 
-            if (resultContex>0)
+            if (resultContext > 0)
             {
                 return Ok(resultRoleDto);
             }

@@ -6,9 +6,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using API.Data;
-using API.Data.Migrations;
 using API.DTOs;
 using API.Entities;
+using API.Extensions;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -26,38 +26,39 @@ namespace API.Controllers
         {
             _context = context;
             _tokenService = tokenService;
-            _mapper= mapper;
+            _mapper = mapper;
         }
 
         [HttpGet("all")]
         public async Task<ActionResult<List<ListUserDto>>> GetAllUser()
         {
             var usersDto = new List<ListUserDto>();
-            
+
             var listUsers = await _context.Users
-                .Where(x=>x.UserName!="admin")
+                .Where(x => x.UserName != "admin")
                 .Include(x => x.UserRoles)
                 .ThenInclude(y => y.Role)
                 .ToListAsync();
 
-            if (listUsers.Count()==0)
+            if (!listUsers.Any())
             {
                 return new List<ListUserDto>();
             }
-        
+
             foreach (var user in listUsers)
             {
                 var rolesDto = new List<RoleDto>();
-                
+
                 foreach (var role in user.UserRoles)
                 {
                     var rolDto = new RoleDto
                     {
                         Name = role.Role.Name
                     };
-                    
+
                     rolesDto.Add(rolDto);
                 }
+
                 var userDto = new ListUserDto
                 {
                     Dni = user.Dni,
@@ -74,13 +75,27 @@ namespace API.Controllers
 
             return usersDto;
         }
-        
-        
+
+
         [HttpGet]
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
-            var dni = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _context.Users.SingleOrDefaultAsync(x => x.Dni == dni);
+            var user = await _context.Users
+                .Include(x => x.UserRoles)
+                .ThenInclude(y => y.Role)
+                .SingleOrDefaultAsync(x => x.Dni == User.GetDni());
+
+            var rolesDto = new List<RoleDto>();
+
+            foreach (var role in user.UserRoles)
+            {
+                var rolDto = new RoleDto
+                {
+                    Name = role.Role.Name
+                };
+
+                rolesDto.Add(rolDto);
+            }
 
             return new UserDto
             {
@@ -91,9 +106,11 @@ namespace API.Controllers
                 Position = user.Position,
                 Token = _tokenService.CreateToken(user),
                 Username = user.UserName,
-                Dni = user.Dni
+                Dni = user.Dni,
+                Roles = rolesDto
             };
         }
+
 
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
@@ -160,6 +177,5 @@ namespace API.Controllers
         {
             return await _context.Users.AnyAsync(x => x.Dni == dni);
         }
-
     }
 }
