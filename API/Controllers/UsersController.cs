@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using API.Data;
 using API.DTOs;
 using API.Entities;
-using API.Extensions;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -80,10 +79,11 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
+            var dni = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _context.Users
                 .Include(x => x.UserRoles)
                 .ThenInclude(y => y.Role)
-                .SingleOrDefaultAsync(x => x.Dni == User.GetDni());
+                .SingleOrDefaultAsync(x => x.Dni == dni);
 
             var rolesDto = new List<RoleDto>();
 
