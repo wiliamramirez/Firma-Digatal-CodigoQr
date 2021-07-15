@@ -9,7 +9,6 @@ using API.DTOs;
 using API.Entities;
 using API.Extensions;
 using API.Interfaces;
-using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,19 +22,16 @@ namespace API.Controllers
         private readonly IStoreFilesServices _storeFiles;
         private readonly DataContext _context;
         private readonly IQrCodeServices _qrCode;
-        private readonly IMapper _mapper;
         private readonly string _documentContainer = "Documents";
         private readonly string _documentContainerCheck = "DocumentCheck";
         private readonly string _codeQrContainer = "QrCodeImages";
         private readonly string _secretKey = "-SH";
 
-        public DocumentsController(IStoreFilesServices storeFiles, DataContext context, IQrCodeServices qrCode,
-            IMapper mapper)
+        public DocumentsController(IStoreFilesServices storeFiles, DataContext context, IQrCodeServices qrCode)
         {
             _storeFiles = storeFiles;
             _context = context;
             _qrCode = qrCode;
-            _mapper = mapper;
         }
 
         [HttpPost]
@@ -85,7 +81,8 @@ namespace API.Controllers
 
 
             /*Generando hash del documento mas el codigo qr*/
-            var hashSecret = CalculateMd5(finalPathDocument);
+            var hashSecretMd5 = CalculateMd5(finalPathDocument);
+            var hashSecretSha256 = CalculateSHA256(finalPathDocument);
 
             var document = new Document
             {
@@ -103,7 +100,8 @@ namespace API.Controllers
                 Affair = "cualquier cosa",
                 Title = "otra cosa que no es la anterior",
                 User = User.GetSurname(),
-                HashSecret = hashSecret,
+                HashSecretMD5 = hashSecretMd5,
+                HashSecretSha256 = hashSecretSha256,
                 Document = document
             };
             _context.DocumentDetails.Add(documentDetails);
@@ -118,7 +116,8 @@ namespace API.Controllers
                 Title = "Titulo",
                 Url = finalUrlDocument,
                 User = User.GetSurname(),
-                Hash = hashSecret,
+                HashMd5 = hashSecretMd5,
+                HashSha256 = hashSecretSha256,
             };
 
 
@@ -150,12 +149,12 @@ namespace API.Controllers
                 _storeFiles.SaveFile(content, extension, _documentContainerCheck, file.ContentType);
 
             /*Retornar hash de documento*/
-            var hashDocument = CalculateMd5(documentPath);
+            var hashDocumentSha256 = CalculateSHA256(documentPath);
 
             /*  */
             var document = await _context.Documents
                 .Include(x => x.DocumentDetail)
-                .FirstOrDefaultAsync(x => x.DocumentDetail.HashSecret == hashDocument);
+                .FirstOrDefaultAsync(x => x.DocumentDetail.HashSecretSha256 == hashDocumentSha256);
 
             await _storeFiles.DeleteFile(documentPath, _documentContainerCheck);
 
@@ -170,7 +169,8 @@ namespace API.Controllers
                 Id = document.Id,
                 Url = document.Url,
                 Affair = document.DocumentDetail.Affair,
-                Hash = document.DocumentDetail.HashSecret,
+                HashMd5 = document.DocumentDetail.HashSecretMD5,
+                HashSha256 = document.DocumentDetail.HashSecretSha256,
                 Title = document.DocumentDetail.Title,
                 User = document.DocumentDetail.User
             };
@@ -195,7 +195,8 @@ namespace API.Controllers
                     Affair = document.DocumentDetail.Affair,
                     Title = document.DocumentDetail.Title,
                     User = document.DocumentDetail.User,
-                    Hash = document.DocumentDetail.HashSecret,
+                    HashMd5 = document.DocumentDetail.HashSecretMD5,
+                    HashSha256 = document.DocumentDetail.HashSecretSha256,
                     Url = document.Url,
                 };
 
@@ -210,12 +211,18 @@ namespace API.Controllers
         {
             using var md5 = MD5.Create();
             using var stream = System.IO.File.OpenRead(filename);
-            
-            
             var hash = md5.ComputeHash(stream);
             return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
         }
 
+        private string CalculateSHA256(string filename)
+        {
+            using var sha256 = SHA256.Create();
+            using FileStream stream = System.IO.File.OpenRead(filename);
+            var hash = sha256.ComputeHash(stream);
+            return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+        }
+        
         /*private string ConvertString(Object obj)
         {
             return JsonConvert.SerializeObject(obj, Formatting.Indented);
