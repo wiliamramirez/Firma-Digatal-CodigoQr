@@ -112,12 +112,12 @@ namespace API.Controllers
             var documentDto = new DocumentDto
             {
                 Id = document.Id,
-                Affair = "Asunto",
-                Title = "Titulo",
+                Affair = documentDetails.Affair,
+                Title = documentDetails.Title,
                 Url = finalUrlDocument,
                 User = User.GetSurname(),
-                HashMd5 = hashSecretMd5,
-                HashSha256 = hashSecretSha256,
+                HashMd5 = documentDetails.HashSecretMD5,
+                HashSha256 = documentDetails.HashSecretSha256,
             };
 
 
@@ -222,7 +222,7 @@ namespace API.Controllers
             var hash = sha256.ComputeHash(stream);
             return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
         }
-        
+
         /*private string ConvertString(Object obj)
         {
             return JsonConvert.SerializeObject(obj, Formatting.Indented);
