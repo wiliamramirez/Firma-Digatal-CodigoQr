@@ -52,6 +52,7 @@ namespace API.Controllers
                 {
                     var rolDto = new RoleDto
                     {
+                        Id = role.Role.Id,
                         Name = role.Role.Name
                     };
 
@@ -91,6 +92,7 @@ namespace API.Controllers
             {
                 var rolDto = new RoleDto
                 {
+                    Id = role.Role.Id,
                     Name = role.Role.Name
                 };
 
@@ -144,6 +146,7 @@ namespace API.Controllers
                 var rol = await _context.Roles.FirstOrDefaultAsync(x => x.Id == userRole.RoleId);
                 var rolDto = new RoleDto
                 {
+                    Id = role.Id,
                     Name = rol.Name
                 };
                 rolesDto.Add(rolDto);

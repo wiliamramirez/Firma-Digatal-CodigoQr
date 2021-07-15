@@ -53,6 +53,7 @@ namespace API.Controllers
             {
                 var rolDto = new RoleDto
                 {
+                    Id = role.Role.Id,
                     Name = role.Role.Name
                 };
 
