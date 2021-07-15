@@ -12,7 +12,6 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers
 
 {
-    [AllowAnonymous]
     public class RolesController : BaseApiController
     {
         private readonly DataContext _context;
@@ -24,7 +23,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<RoleDto>>> GetRole()
+        public async Task<ActionResult<List<RoleDto>>> List()
 
         {
             var rolesDto = new List<RoleDto>();
@@ -34,6 +33,7 @@ namespace API.Controllers
             {
                 var roleDto = new RoleDto
                 {
+                    Id = role.Id,
                     Name = role.Name
                 };
 
@@ -44,17 +44,12 @@ namespace API.Controllers
         }
 
         [HttpPost("add")]
-        public async Task<ActionResult<RoleDto>> AddRole(RoleDto roleDto)
+        public async Task<ActionResult<RoleDto>> AddRole(AddRoleDto addRoleDto)
         {
-            if (roleDto == null)
-            {
-                return BadRequest();
-            }
-
             var role = new Role
             {
                 Id = Guid.NewGuid(),
-                Name = roleDto.Name,
+                Name = addRoleDto.Name,
             };
 
             _context.Roles.Add(role);
@@ -62,7 +57,8 @@ namespace API.Controllers
 
             var resultRoleDto = new RoleDto
             {
-                Name = roleDto.Name
+                Id = role.Id,
+                Name = role.Name
             };
 
             if (resultContext > 0)
