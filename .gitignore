@@ -434,3 +434,7 @@ $RECYCLE.BIN/
 !.vscode/extensions.json
 actulizar.sh
 
+API/wwwroot/
+API/DatabaseProject.db/
+
+

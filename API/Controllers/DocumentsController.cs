@@ -133,7 +133,7 @@ namespace API.Controllers
 
         /*/api/documents/check*/
         [HttpPost("check")]
-        public async Task<ActionResult<DocumentDto>> CheckDocument([FromForm] IFormFile file)
+        public async Task<ActionResult<UserDto>> CheckDocument([FromForm] IFormFile file)
         {
             if (file == null)
             {
@@ -154,6 +154,7 @@ namespace API.Controllers
             /*  */
             var document = await _context.Documents
                 .Include(x => x.DocumentDetail)
+                .Include(y=>y.AppUser)
                 .FirstOrDefaultAsync(x => x.DocumentDetail.HashSecretSha256 == hashDocumentSha256);
 
             await _storeFiles.DeleteFile(documentPath, _documentContainerCheck);
@@ -161,21 +162,30 @@ namespace API.Controllers
 
             if (document == null)
             {
-                return new DocumentDto();
+                return new UserDto();
             }
 
-            var documentDto = new DocumentDto
+            var userDto = new UserDto
             {
+                Dni = document.AppUser.Dni,
+                FullName = document.AppUser.FullName,
+                Email = document.AppUser.Email,
+                Username = document.AppUser.UserName,
+                LastName = document.AppUser.LastName,
+                Position = document.AppUser.Position
+                /*
                 Id = document.Id,
                 Url = document.Url,
                 Affair = document.DocumentDetail.Affair,
                 HashMd5 = document.DocumentDetail.HashSecretMD5,
                 HashSha256 = document.DocumentDetail.HashSecretSha256,
                 Title = document.DocumentDetail.Title,
-                User = document.DocumentDetail.User
+                //User = document.DocumentDetail.User
+                User= document.AppUser.UserName*/
+
             };
 
-            return documentDto;
+            return userDto;
         }
 
         [HttpGet]
