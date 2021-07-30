@@ -23,4 +23,9 @@
   <ItemGroup>
     <Folder Include="wwwroot" />
   </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\Documents\44106632-89cc-48e9-9d42-b4c14e27c378-SH.pdf" />
+    <_ContentIncludedByDefault Remove="wwwroot\Documents\e695c6a2-5c08-4455-92ea-0c8a73ba493d-SH.pdf" />
+  </ItemGroup>
 </Project>
