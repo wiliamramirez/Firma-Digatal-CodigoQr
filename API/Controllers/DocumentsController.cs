@@ -112,6 +112,7 @@ namespace API.Controllers
             var documentDto = new DocumentDto
             {
                 Id = document.Id,
+                DetailDocumentId = documentDetails.Id,
                 Affair = documentDetails.Affair,
                 Title = documentDetails.Title,
                 Url = finalUrlDocument,
@@ -129,6 +130,24 @@ namespace API.Controllers
             }
 
             return BadRequest();
+        }
+
+        [HttpPut("detailDocument/{id}")]
+        public async Task<ActionResult> EditDetailDocument(Guid id, AddDocumentDto documentDto)
+        {
+            var document = await _context.DocumentDetails.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (document == null)
+            {
+                return NotFound();
+            }
+
+            document.Affair = documentDto.Affair;
+            document.Title = documentDto.Title;
+
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
 
         /*/api/documents/check*/
@@ -154,7 +173,7 @@ namespace API.Controllers
             /*  */
             var document = await _context.Documents
                 .Include(x => x.DocumentDetail)
-                .Include(y=>y.AppUser)
+                .Include(y => y.AppUser)
                 .FirstOrDefaultAsync(x => x.DocumentDetail.HashSecretSha256 == hashDocumentSha256);
 
             await _storeFiles.DeleteFile(documentPath, _documentContainerCheck);
@@ -173,16 +192,6 @@ namespace API.Controllers
                 Username = document.AppUser.UserName,
                 LastName = document.AppUser.LastName,
                 Position = document.AppUser.Position
-                /*
-                Id = document.Id,
-                Url = document.Url,
-                Affair = document.DocumentDetail.Affair,
-                HashMd5 = document.DocumentDetail.HashSecretMD5,
-                HashSha256 = document.DocumentDetail.HashSecretSha256,
-                Title = document.DocumentDetail.Title,
-                //User = document.DocumentDetail.User
-                User= document.AppUser.UserName*/
-
             };
 
             return userDto;

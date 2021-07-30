@@ -5,6 +5,7 @@ namespace API.DTOs
     public class DocumentDto
     {
         public Guid Id { get; set; }
+        public Guid DetailDocumentId { get; set; }
         public string Url { get; set; }
         public string User { get; set; }
         public string Affair { get; set; }
